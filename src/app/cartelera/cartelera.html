@@ -1,1 +1,87 @@
-<p>cartelera works!</p>
+<section class="cartelera">
+  <div class="cartelera-container">
+    <div class="presentacion">
+      <p class="saludo">Hola,</p>
+      <h1>disfruta lo mejor del cine</h1>
+      <p class="subtitulo">
+        G R A N D E S &nbsp; H I S T O R I A S<br>
+        S I E M P R E &nbsp; E N &nbsp; P A N T A L L A
+      </p>
+    </div>
+
+    <div class="categorias">
+      <button
+        type="button"
+        [class.active]="categoriaActual === 'cartelera'"
+        (click)="cambiarCategoria('cartelera')"
+      >
+        Cartelera
+      </button>
+      <button
+        type="button"
+        [class.active]="categoriaActual === 'estreno'"
+        (click)="cambiarCategoria('estreno')"
+      >
+        Ahora
+      </button>
+      <button
+        type="button"
+        [class.active]="categoriaActual === 'proximamente'"
+        (click)="cambiarCategoria('proximamente')"
+      >
+        Próximamente
+      </button>
+    </div>
+
+    @if (cargando) {
+      <div class="estado">
+        Cargando películas...
+      </div>
+    }
+
+    @if (!cargando && error) {
+      <div class="estado">
+        <p>No se pudieron cargar las películas.</p>
+        <button type="button" (click)="cargarPeliculas()">Reintentar</button>
+      </div>
+    }
+
+    @if (!cargando && !error) {
+      <div class="peliculas">
+        @for (pelicula of peliculasFiltradas; track pelicula.id) {
+          <article class="pelicula">
+            <div class="poster">
+              <img
+                [src]="pelicula.imagen"
+                [alt]="pelicula.titulo"
+              >
+            </div>
+
+            <div class="etiqueta">
+              @if (pelicula.estado === 'cartelera') {
+                <span class="preventa">🎟 Pre-venta</span>
+              }
+
+              @if (pelicula.estado === 'estreno') {
+                <span class="estreno">★ Estreno</span>
+              }
+
+              @if (pelicula.estado === 'proximamente') {
+                <span class="proximo">Próximamente</span>
+              }
+            </div>
+
+            <p class="clasificacion">{{ pelicula.clasificacion }}</p>
+            <h2>{{ pelicula.titulo }}</h2>
+          </article>
+        }
+      </div>
+    }
+
+    @if (!cargando && !error && peliculasFiltradas.length === 0) {
+      <div class="estado">
+        No hay películas en esta categoría.
+      </div>
+    }
+  </div>
+</section>
