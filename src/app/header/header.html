@@ -1,10 +1,17 @@
-<header>
-    <nav class="nav-bar">
-        <a routerLink="/" routerLinkActive="activo" [routerLinkActiveOptions]="{ exact: true }">
-            CARTELERA
-        </a>
-        <a routerLink="/cartelera" routerLinkActive="activo">CARTELERA</a>
-        <a routerLink="/dulceria" routerLinkActive="activo">DULCERIA</a>
-
+<header class="header">
+  <div class="header-container">
+    <a routerLink="/cartelera" class="logo">
+      <span>METROPOLI</span>
+      <strong>CINE</strong>
+    </a>
+    <nav class="nav">
+      <a routerLink="/cartelera" routerLinkActive="active">Cartelera</a>
+      <a routerLink="/dulceria" routerLinkActive="active">Dulcería</a>
+      <a href="#">Promociones</a>
+      <a href="#" class="perfil">
+        <span class="usuario">♙</span>
+        <span>Perfil</span>
+      </a>
     </nav>
+  </div>
 </header>
