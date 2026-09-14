@@ -1,16 +1,21 @@
+* {
+  box-sizing: border-box;
+}
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100vh;
-    background-color: #070E16;
-    box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: inherit;
+html {
+  background: #080d13;
+}
+
+body {
+  background: #080d13;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
 }

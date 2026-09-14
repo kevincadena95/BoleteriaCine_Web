@@ -1,0 +1,262 @@
+.cartelera {
+  width: 100%;
+  flex: 1;
+  background: #080d13;
+  color: #fff;
+  padding: 42px 0 60px;
+}
+
+.cartelera-container {
+  width: calc(100% - 80px);
+  max-width: 1380px;
+  margin: 0 auto;
+}
+
+.presentacion {
+  margin-bottom: 28px;
+}
+
+.saludo {
+  margin: 0;
+  color: #fff;
+  font-size: 48px;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.presentacion h1 {
+  margin: 0;
+  color: #f2c94c;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.subtitulo {
+  margin: 23px 0 0;
+  color: #9299a3;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  line-height: 2.1;
+}
+
+.categorias {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 78px;
+  margin: 0 0 20px;
+}
+
+.categorias button {
+  position: relative;
+  border: none;
+  background: transparent;
+  padding: 12px 10px 16px;
+  color: #9ba2ab;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.categorias button:hover {
+  color: #fff;
+}
+
+.categorias button.active {
+  color: #f2c94c;
+  font-weight: 600;
+}
+
+.categorias button.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: #f2c94c;
+}
+
+.peliculas {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 62px;
+  row-gap: 40px;
+}
+
+.pelicula {
+  width: 100%;
+  min-width: 0;
+}
+
+.poster {
+  width: 100%;
+  aspect-ratio: .69;
+  overflow: hidden;
+  border: 1px solid #303945;
+  border-radius: 9px;
+  background: #101720;
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+  transition: transform .3s ease;
+}
+
+.pelicula:hover .poster img {
+  transform: scale(1.025);
+}
+
+.etiqueta {
+  min-height: 36px;
+  margin-top: 8px;
+}
+
+.etiqueta span {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.preventa {
+  background: #ff7373;
+  color: #111;
+}
+
+.estreno {
+  background: #f2c94c;
+  color: #111;
+}
+
+.proximo {
+  background: #4b5563;
+  color: #fff;
+}
+
+.clasificacion {
+  margin: 7px 0 5px;
+  color: #b8bec6;
+  font-size: 15px;
+}
+
+.pelicula h2 {
+  margin: 0;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.estado {
+  width: 100%;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  text-align: center;
+  font-size: 16px;
+}
+
+.estado p {
+  margin: 0 0 15px;
+}
+
+.estado button {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  background: #f2c94c;
+  color: #111;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .cartelera-container {
+    width: calc(100% - 50px);
+  }
+
+  .saludo,
+  .presentacion h1 {
+    font-size: 42px;
+  }
+
+  .peliculas {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 30px;
+  }
+}
+
+@media (max-width: 800px) {
+  .cartelera {
+    padding-top: 35px;
+  }
+
+  .saludo,
+  .presentacion h1 {
+    font-size: 36px;
+  }
+
+  .categorias {
+    gap: 35px;
+  }
+
+  .categorias button {
+    font-size: 16px;
+  }
+
+  .peliculas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 35px 22px;
+  }
+}
+
+@media (max-width: 520px) {
+  .cartelera {
+    padding: 30px 0 40px;
+  }
+
+  .cartelera-container {
+    width: calc(100% - 30px);
+  }
+
+  .saludo,
+  .presentacion h1 {
+    font-size: 30px;
+  }
+
+  .subtitulo {
+    font-size: 9px;
+    letter-spacing: 1.8px;
+    line-height: 2;
+  }
+
+  .categorias {
+    justify-content: space-between;
+    gap: 5px;
+    margin-top: 25px;
+  }
+
+  .categorias button {
+    font-size: 14px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .peliculas {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
