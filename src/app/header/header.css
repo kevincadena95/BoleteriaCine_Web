@@ -85,6 +85,13 @@
   line-height: 1;
 }
 
+.logo img {
+  height: 105px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
 @media (max-width: 950px) {
   .header-container {
     width: calc(100% - 50px);
@@ -132,4 +139,6 @@
   .nav a.active::after {
     height: 2px;
   }
+
+
 }

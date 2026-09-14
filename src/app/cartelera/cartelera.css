@@ -89,6 +89,7 @@
 .pelicula {
   width: 100%;
   min-width: 0;
+  cursor: pointer;
 }
 
 .poster {
