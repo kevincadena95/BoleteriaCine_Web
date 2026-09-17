@@ -12,44 +12,44 @@
     <div class="categorias">
       <button
         type="button"
-        [class.active]="categoriaActual === 'cartelera'"
+        [class.active]="categoriaActual() === 'cartelera'"
         (click)="cambiarCategoria('cartelera')"
       >
         Cartelera
       </button>
       <button
         type="button"
-        [class.active]="categoriaActual === 'estreno'"
+        [class.active]="categoriaActual() === 'estreno'"
         (click)="cambiarCategoria('estreno')"
       >
         Ahora
       </button>
       <button
         type="button"
-        [class.active]="categoriaActual === 'proximamente'"
+        [class.active]="categoriaActual() === 'proximamente'"
         (click)="cambiarCategoria('proximamente')"
       >
         Próximamente
       </button>
     </div>
 
-    @if (cargando) {
+    @if (cargando()) {
       <div class="estado">
         Cargando películas...
       </div>
     }
 
-    @if (!cargando && error) {
+    @if (!cargando() && error()) {
       <div class="estado">
         <p>No se pudieron cargar las películas.</p>
         <button type="button" (click)="cargarPeliculas()">Reintentar</button>
       </div>
     }
 
-    @if (!cargando && !error) {
+    @if (!cargando() && !error()) {
       <div class="peliculas">
-        @for (pelicula of peliculasFiltradas; track pelicula.id) {
-          <article class="pelicula">
+        @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+          <article class="pelicula" (click)="seleccionarPelicula(pelicula)" style="cursor: pointer;">
             <div class="poster">
               <img
                 [src]="pelicula.imagen"
@@ -78,7 +78,7 @@
       </div>
     }
 
-    @if (!cargando && !error && peliculasFiltradas.length === 0) {
+    @if (!cargando() && !error() && peliculasFiltradas().length === 0) {
       <div class="estado">
         No hay películas en esta categoría.
       </div>

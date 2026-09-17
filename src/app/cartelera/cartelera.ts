@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Pelicula, PeliculaService } from './pelicula.service';
 
 @Component({
@@ -9,38 +10,44 @@ import { Pelicula, PeliculaService } from './pelicula.service';
   styleUrl: './cartelera.css'
 })
 export class Cartelera implements OnInit {
-  peliculas: Pelicula[] = [];
-  categoriaActual = 'cartelera';
-  cargando = true;
-  error = false;
+  private peliculaService = inject(PeliculaService);
+  private router = inject(Router);
 
-  constructor(private peliculaService: PeliculaService) {}
+  peliculas = signal<Pelicula[]>([]);
+  categoriaActual = signal('cartelera');
+  cargando = signal(true);
+  error = signal(false);
+
+  peliculasFiltradas = computed(() => {
+    return this.peliculas().filter(
+      pelicula => pelicula.estado === this.categoriaActual()
+    );
+  });
 
   ngOnInit(): void {
     this.cargarPeliculas();
   }
 
+  seleccionarPelicula(pelicula: Pelicula): void {
+    this.router.navigate(['/boleteria', pelicula.slug]);
+  }
+
   async cargarPeliculas(): Promise<void> {
-    this.cargando = true;
-    this.error = false;
+    this.cargando.set(true);
+    this.error.set(false);
 
     try {
-      this.peliculas = await this.peliculaService.obtenerPeliculas();
+      const data = await this.peliculaService.obtenerPeliculas();
+      this.peliculas.set(data);
     } catch (error) {
       console.error('Error al cargar películas:', error);
-      this.error = true;
+      this.error.set(true);
     } finally {
-      this.cargando = false;
+      this.cargando.set(false);
     }
   }
 
   cambiarCategoria(categoria: string): void {
-    this.categoriaActual = categoria;
-  }
-
-  get peliculasFiltradas(): Pelicula[] {
-    return this.peliculas.filter(
-      pelicula => pelicula.estado === this.categoriaActual
-    );
+    this.categoriaActual.set(categoria);
   }
 }

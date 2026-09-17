@@ -1,1 +1,108 @@
-<p>boleteria works!</p>
+<section class="boleteria">
+    @if (cargando()) {
+    <div class="estado">Cargando película...</div>
+    }
+
+    @if (!cargando() && error()) {
+    <div class="estado">No se pudo cargar la película.</div>
+    }
+
+    @if (!cargando() && !error() && pelicula(); as peli) {
+    <div class="fondo" [style.background-image]="'url(' + peli.imagen + ')'"></div>
+
+    <div class="boleteria-container">
+        <a routerLink="/" class="regresar">← Regresar</a>
+
+        <div class="contenido">
+            <div class="informacion-pelicula">
+                <img class="poster" [src]="peli.imagen" [alt]="peli.titulo">
+
+                <div class="etiqueta">
+                    @if (peli.estado === 'cartelera') {
+                    <span class="preventa">🎟 Pre-venta</span>
+                    }
+
+                    @if (peli.estado === 'estreno') {
+                    <span class="estreno">★ Estreno</span>
+                    }
+
+                    @if (peli.estado === 'proximamente') {
+                    <span class="proximo">Próximamente</span>
+                    }
+                </div>
+
+                <p class="clasificacion">{{ peli.clasificacion }}</p>
+                <h1>{{ peli.titulo }}</h1>
+                <p class="duracion">◷ {{ peli.duracion }} min</p>
+
+                @if (peli.trailerUrl) {
+                <a class="trailer" [href]="peli.trailerUrl" target="_blank">
+                    ▶ Ver trailer
+                </a>
+                }
+
+                <div class="sinopsis">
+                    <h3>Sinopsis</h3>
+                    <p>{{ peli.sinopsis }}</p>
+                </div>
+
+                <div class="datos">
+                    <h3>Información</h3>
+
+                    <div class="generos">
+                        @for (genero of peli.generos; track genero) {
+                        <span>{{ genero }}</span>
+                        }
+                    </div>
+
+                    <p>Estreno: {{ peli.fechaEstreno }}</p>
+                </div>
+            </div>
+
+            <div class="funciones">
+                @if (peli.estado === 'proximamente') {
+                <div class="proximamente-contenido">
+                    <span>PRÓXIMO ESTRENO</span>
+                    <h2>¡Próximamente!</h2>
+                    <p>Esta película todavía no tiene funciones disponibles.</p>
+                </div>
+                } @else {
+                <div class="funciones-header">
+                    <h2>Funciones</h2>
+                    <p>Selecciona un día y un horario</p>
+                </div>
+
+                <div class="fecha">
+                    @for (fecha of fechas; track fecha.numero) {
+                    <button type="button" class="dia" [class.activo]="fechaSeleccionada() === fecha.numero"
+                        (click)="cambiarFecha(fecha.numero)">
+                        <span>{{ fecha.dia }}</span>
+                        <strong>{{ fecha.numero }}</strong>
+                    </button>
+                    }
+                </div>
+
+                @for (funcion of funciones; track funcion.formato) {
+                <div class="funcion">
+                    <h2>{{ funcion.formato }}</h2>
+                    <p>{{ funcion.sala }}</p>
+
+                    <div class="horarios">
+                        @for (hora of funcion.horarios; track hora) {
+                        <button type="button" (click)="seleccionarFuncion(funcion, hora)">{{ hora }}</button>
+                        }
+                    </div>
+                </div>
+                }
+
+                @if (funciones.length === 0) {
+                <div class="sin-funciones">
+                    No hay funciones disponibles para este día.
+                </div>
+                }
+                }
+            </div>
+        </div>
+    </div>
+    }
+</section>

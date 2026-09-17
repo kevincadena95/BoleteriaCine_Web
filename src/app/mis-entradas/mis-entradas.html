@@ -1,0 +1,26 @@
+<main class="entradas-page">
+  <section class="entradas-contenido">
+    <p class="eyebrow">TU HISTORIAL</p>
+    <h1>Mis entradas</h1>
+    <p class="intro">Aquí aparecerán tus funciones confirmadas. ESTO SE DEBE CONECTAR DESPUES CON EL PERFIL Y CEUNTA DE USUSARIO</p>
+
+    @for (entrada of compraService.entradas(); track entrada.codigo; let indice = $index) {
+    <article class="entrada">
+      <div class="entrada-codigo"><span>ENTRADA CONFIRMADA</span><strong>{{ entrada.codigo }}</strong></div>
+      <div class="entrada-info">
+        <h2>{{ entrada.funcion.pelicula }}</h2>
+        <p>{{ entrada.funcion.fecha }} · {{ entrada.funcion.hora }} · {{ entrada.funcion.formato }}</p>
+        <p>{{ entrada.funcion.sala }} · Asientos: {{ asientosTexto(indice) }}</p>
+        <p>{{ entrada.asientos.length }} asiento{{ entrada.asientos.length === 1 ? '' : 's' }} · Total: {{ total(indice) | currency:'USD' }}</p>
+      </div>
+    </article>
+    } @empty {
+    <div class="sin-entradas">
+      <span>🎬</span>
+      <h2>Aún no tienes entradas confirmadas</h2>
+      <p>Cuando confirmes una compra, verás aquí todos los datos de tu función.</p>
+      <a routerLink="/cartelera">Ver cartelera</a>
+    </div>
+    }
+  </section>
+</main>
