@@ -64,10 +64,8 @@ export class PeliculaService {
     }
   }
 
-
   async obtenerPeliculaPorSlug(slug: string): Promise<Pelicula | undefined> {
     const peliculas = await this.obtenerPeliculas();
-    return peliculas.find(pelicula => pelicula.slug === slug);
+    return peliculas.find(p => p.slug === slug);
   }
-
 }

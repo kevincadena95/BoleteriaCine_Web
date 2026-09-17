@@ -1,0 +1,88 @@
+<main class="cine-container">
+    @if (aviso()) {
+    <div class="aviso" role="status">✓ {{ aviso() }}</div>
+    }
+
+    <a class="volver" [routerLink]="['/boleteria', peliculaSlug()]">← Volver a horarios</a>
+
+    <section class="detalle-funcion" aria-label="Función seleccionada">
+        <span class="eyebrow">TU FUNCIÓN</span>
+        <h1>{{ pelicula() }}</h1>
+        <p>{{ fecha() }} · {{ hora() }} · {{ formato() }} · {{ sala() }}</p>
+    </section>
+
+    @if (cargando()) {
+    <div class="loader">
+        <p>Cargando mapa de sala...</p>
+    </div>
+    } @else {
+    <div class="reserva-temporal" [class.oculta]="!puedeContinuar()">
+        <span>⏱ Reserva temporal</span>
+        <strong>{{ tiempoFormateado() }}</strong>
+    </div>
+
+    <div class="pantalla-cine">
+        <div class="arco-luminoso"></div>
+        <p>PANTALLA</p>
+    </div>
+
+    <div class="leyenda" aria-label="Estados de los asientos">
+        <div class="item-leyenda"><span class="box libre"></span> Libre</div>
+        <div class="item-leyenda"><span class="box seleccionado"></span> Tu selección</div>
+        <div class="item-leyenda"><span class="box ocupado"></span> Ocupado</div>
+    </div>
+
+    <section class="mapa-sala" aria-label="Mapa de asientos">
+        @for (fila of filas(); track fila.nombre) {
+        <div class="fila-asientos">
+            <span class="etiqueta-fila" aria-hidden="true">{{ fila.nombre }}</span>
+            <div class="asientos-fila">
+                @for (asiento of fila.asientos; track asiento.id) {
+                <button class="asiento" [class.libre]="asiento.estado === 'LIBRE'"
+                    [class.seleccionado]="asiento.estado === 'SELECCIONADO'"
+                    [class.ocupado]="asiento.estado === 'OCUPADO'" [disabled]="asiento.estado === 'OCUPADO'"
+                    (click)="toggleAsiento(asiento)"
+                    [attr.aria-label]="'Asiento ' + asiento.id + ', ' + asiento.estado">
+                    {{ asiento.id.slice(1) }}
+                </button>
+                }
+            </div>
+            <span class="etiqueta-fila derecha" aria-hidden="true">{{ fila.nombre }}</span>
+        </div>
+        } @empty {
+        <p class="empty-state">No se encontraron asientos para esta función.</p>
+        }
+    </section>
+    }
+</main>
+
+<footer class="sticky-footer">
+    <div class="resumen">
+        <p>{{ seleccionados().length }} asiento{{ seleccionados().length === 1 ? '' : 's' }} seleccionado{{
+            seleccionados().length === 1 ? '' : 's' }}</p>
+        <h3>{{ subtotal() | currency:'USD' }}</h3>
+    </div>
+    <div class="acciones-footer">
+        <button class="btn-cancelar" [disabled]="!puedeContinuar()" (click)="cancelarSeleccion()">Cancelar
+            selección</button>
+        <button class="btn-cancelar" [disabled]="!puedeContinuar()" (click)="continuar(false)">Continuar sin
+            dulcería</button>
+        <button class="btn-continuar" [disabled]="!puedeContinuar()" (click)="continuar(true)">Agregar dulcería
+            (opcional)</button>
+    </div>
+</footer>
+
+@if (mostrarConfirmacion()) {
+<div class="modal-backdrop" role="presentation">
+    <section class="modal-salida" role="dialog" aria-modal="true" aria-labelledby="titulo-salida">
+        <span class="modal-icono">⚠</span>
+        <h2 id="titulo-salida">¿Salir de la selección?</h2>
+        <p>Tienes {{ seleccionados().length }} asiento{{ seleccionados().length === 1 ? '' : 's' }} reservado{{
+            seleccionados().length === 1 ? '' : 's' }} temporalmente. Si sales, se liberarán.</p>
+        <div class="modal-acciones">
+            <button class="btn-secundario" (click)="cancelarSalida()">Seguir eligiendo</button>
+            <button class="btn-peligro" (click)="confirmarSalida()">Salir sin guardar</button>
+        </div>
+    </section>
+</div>
+}

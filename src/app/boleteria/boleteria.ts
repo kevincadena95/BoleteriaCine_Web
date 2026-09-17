@@ -1,4 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Pelicula, PeliculaService } from '../cartelera/pelicula.service';
 
@@ -101,6 +102,7 @@ export class Boleteria implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private peliculaService: PeliculaService
   ) { }
 
@@ -142,5 +144,24 @@ export class Boleteria implements OnInit {
 
   get funciones(): any[] {
     return this.funcionesPorFecha[this.fechaSeleccionada()] || [];
+  }
+
+  seleccionarFuncion(funcion: any, hora: string): void {
+    const peli = this.pelicula();
+    if (!peli) return;
+
+    // Generar un id ficticio para la función basado en la película, fecha y hora
+    const funcionId = `F${peli.id}-${this.fechaSeleccionada()}-${hora.replace(':', '')}`;
+
+    this.router.navigate(['/asientos', funcionId], {
+      queryParams: {
+        slug: peli.slug,
+        pelicula: peli.titulo,
+        fecha: `2026-10-${this.fechaSeleccionada()}`,
+        formato: funcion.formato,
+        sala: funcion.sala,
+        hora: hora
+      }
+    });
   }
 }

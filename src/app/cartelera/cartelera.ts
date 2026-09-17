@@ -1,3 +1,5 @@
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { Component, OnInit, signal } from '@angular/core';
 import { Pelicula, PeliculaService } from './pelicula.service';
 import { RouterLink } from '@angular/router';
@@ -10,15 +12,26 @@ import { RouterLink } from '@angular/router';
   styleUrl: './cartelera.css'
 })
 export class Cartelera implements OnInit {
+  private peliculaService = inject(PeliculaService);
+  private router = inject(Router);
+
   peliculas = signal<Pelicula[]>([]);
-  categoriaActual = 'cartelera';
+  categoriaActual = signal('cartelera');
   cargando = signal(true);
   error = signal(false);
 
-  constructor(private peliculaService: PeliculaService) { }
+  peliculasFiltradas = computed(() => {
+    return this.peliculas().filter(
+      pelicula => pelicula.estado === this.categoriaActual()
+    );
+  });
 
   ngOnInit(): void {
     this.cargarPeliculas();
+  }
+
+  seleccionarPelicula(pelicula: Pelicula): void {
+    this.router.navigate(['/boleteria', pelicula.slug]);
   }
 
   async cargarPeliculas(): Promise<void> {
@@ -26,8 +39,8 @@ export class Cartelera implements OnInit {
     this.error.set(false);
 
     try {
-      const datos = await this.peliculaService.obtenerPeliculas();
-      this.peliculas.set(datos);
+      const data = await this.peliculaService.obtenerPeliculas();
+      this.peliculas.set(data);
     } catch (error) {
       console.error('Error al cargar películas:', error);
       this.error.set(true);
@@ -37,29 +50,7 @@ export class Cartelera implements OnInit {
   }
 
   cambiarCategoria(categoria: string): void {
-    this.categoriaActual = categoria;
-  }
-
-  get peliculasFiltradas(): Pelicula[] {
-    if (this.categoriaActual === 'cartelera') {
-      return this.peliculas()
-        .filter(pelicula =>
-          pelicula.estado === 'cartelera' ||
-          pelicula.estado === 'estreno'
-        )
-        .sort((a, b) => {
-          const orden: Record<string, number> = {
-            cartelera: 1,
-            estreno: 2
-          };
-
-          return orden[a.estado] - orden[b.estado];
-        });
-    }
-
-    return this.peliculas().filter(
-      pelicula => pelicula.estado === this.categoriaActual
-    );
+    this.categoriaActual.set(categoria);
   }
 
  

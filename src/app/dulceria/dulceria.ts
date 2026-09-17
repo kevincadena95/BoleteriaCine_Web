@@ -1,5 +1,7 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { CompraService } from '../compra/compra.service';
 
 export type ProductCategory = 'combo' | 'individual';
 export type FilterCategory = 'todos' | ProductCategory;
@@ -26,6 +28,8 @@ export interface CartItem {
   styleUrls: ['./dulceria.css'],
 })
 export class Dulceria {
+  private router = inject(Router);
+  private compraService = inject(CompraService);
 
   readonly products: Product[] = [
     // Combos
@@ -200,5 +204,16 @@ export class Dulceria {
     const img = event.target as HTMLImageElement;
     img.onerror = null; 
     img.style.display = 'none';
+  }
+
+  continuarAConfirmacion(): void {
+    this.compraService.guardarDulceria(
+      this.cartItems().map(item => ({
+        nombre: item.product.name,
+        cantidad: item.quantity,
+        precioUnitario: item.product.price
+      }))
+    );
+    this.router.navigate(['/confirmacion']);
   }
 }

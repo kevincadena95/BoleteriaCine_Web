@@ -10,40 +10,52 @@
     </div>
 
     <div class="categorias">
-      <button type="button" [class.active]="categoriaActual === 'cartelera'" (click)="cambiarCategoria('cartelera')">
+      <button
+        type="button"
+        [class.active]="categoriaActual() === 'cartelera'"
+        (click)="cambiarCategoria('cartelera')"
+      >
         Cartelera
       </button>
-
-      <button type="button" [class.active]="categoriaActual === 'estreno'" (click)="cambiarCategoria('estreno')">
+      <button
+        type="button"
+        [class.active]="categoriaActual() === 'estreno'"
+        (click)="cambiarCategoria('estreno')"
+      >
         Ahora
       </button>
-
-      <button type="button" [class.active]="categoriaActual === 'proximamente'"
-        (click)="cambiarCategoria('proximamente')">
+      <button
+        type="button"
+        [class.active]="categoriaActual() === 'proximamente'"
+        (click)="cambiarCategoria('proximamente')"
+      >
         Próximamente
       </button>
     </div>
 
     @if (cargando()) {
-    <div class="estado">
-      Cargando películas...
-    </div>
+      <div class="estado">
+        Cargando películas...
+      </div>
     }
 
     @if (!cargando() && error()) {
-    <div class="estado">
-      <p>No se pudieron cargar las películas.</p>
-      <button type="button" (click)="cargarPeliculas()">Reintentar</button>
-    </div>
+      <div class="estado">
+        <p>No se pudieron cargar las películas.</p>
+        <button type="button" (click)="cargarPeliculas()">Reintentar</button>
+      </div>
     }
 
     @if (!cargando() && !error()) {
-    <div class="peliculas">
-      @for (pelicula of peliculasFiltradas; track pelicula.id) {
-      <article class="pelicula" [routerLink]="['/boleteria', pelicula.slug]">
-        <div class="poster">
-          <img [src]="pelicula.imagen" [alt]="pelicula.titulo">
-        </div>
+      <div class="peliculas">
+        @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+          <article class="pelicula" (click)="seleccionarPelicula(pelicula)" style="cursor: pointer;">
+            <div class="poster">
+              <img
+                [src]="pelicula.imagen"
+                [alt]="pelicula.titulo"
+              >
+            </div>
 
         <div class="etiqueta">
           @if (pelicula.estado === 'cartelera') {
@@ -66,10 +78,10 @@
     </div>
     }
 
-    @if (!cargando() && !error() && peliculasFiltradas.length === 0) {
-    <div class="estado">
-      No hay películas en esta categoría.
-    </div>
+    @if (!cargando() && !error() && peliculasFiltradas().length === 0) {
+      <div class="estado">
+        No hay películas en esta categoría.
+      </div>
     }
   </div>
 </section>

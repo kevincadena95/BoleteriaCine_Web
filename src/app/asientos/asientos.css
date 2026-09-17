@@ -1,0 +1,387 @@
+:host {
+    --fondo: #080d13;
+    --panel: #101720;
+    --borde: #303945;
+    --texto-suave: #aeb8c5;
+    --dorado: #f2c94c;
+    --rojo: #ef6b72;
+    display: block;
+}
+
+.cine-container {
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    padding: 2rem 1rem 150px;
+    color: white;
+    background: radial-gradient(circle at top, #182433 0, var(--fondo) 42rem);
+    font-family: system-ui, sans-serif;
+}
+
+.volver {
+    display: inline-block;
+    margin: 0 auto 1.25rem;
+    color: var(--texto-suave);
+    text-decoration: none;
+}
+
+.volver:hover {
+    color: var(--dorado);
+}
+
+.detalle-funcion,
+.reserva-temporal,
+.mapa-sala,
+.pantalla-cine,
+.leyenda,
+.volver {
+    max-width: 720px;
+}
+
+.detalle-funcion {
+    margin: 0 auto 1.25rem;
+    padding: 1.25rem 1.4rem;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
+    background: rgba(16, 23, 32, .85);
+}
+
+.eyebrow {
+    color: var(--dorado);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .15em;
+}
+
+.detalle-funcion h1 {
+    margin: .35rem 0;
+    font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.detalle-funcion p {
+    margin: 0;
+    color: var(--texto-suave);
+}
+
+.reserva-temporal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 auto 1.5rem;
+    padding: .7rem 1rem;
+    color: #241b00;
+    background: var(--dorado);
+    border-radius: 8px;
+    font-size: .9rem;
+}
+
+.reserva-temporal.oculta {
+    visibility: hidden;
+}
+
+.reserva-temporal strong {
+    font-variant-numeric: tabular-nums;
+    font-size: 1.05rem;
+}
+
+.pantalla-cine {
+    margin: 0 auto 2.25rem;
+    text-align: center;
+}
+
+.arco-luminoso {
+    height: 46px;
+    border-top: 3px solid rgba(255, 255, 255, .55);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    box-shadow: 0 -20px 45px -8px rgba(255, 255, 255, .18);
+}
+
+.pantalla-cine p {
+    margin: .9rem 0 0;
+    color: rgba(255, 255, 255, .38);
+    font-size: .8rem;
+    letter-spacing: .35em;
+}
+
+.leyenda {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .8rem 1.5rem;
+    margin: 0 auto 1.5rem;
+    color: var(--texto-suave);
+    font-size: .84rem;
+}
+
+.item-leyenda {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.box {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+}
+
+.box.libre {
+    border: 1px solid var(--borde);
+    background: var(--panel);
+}
+
+.box.seleccionado {
+    background: var(--dorado);
+}
+
+.box.ocupado {
+    background: var(--rojo);
+}
+
+.mapa-sala {
+    width: min(720px, calc(100% - 2rem));
+    margin: 0 auto;
+    padding: 1.25rem;
+    overflow-x: auto;
+    border: 1px solid rgba(48, 57, 69, .7);
+    border-radius: 14px;
+    background: rgba(8, 13, 19, .6);
+}
+
+.fila-asientos {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 24px minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: .7rem;
+    margin-bottom: .7rem;
+}
+
+.fila-asientos:last-child {
+    margin-bottom: 0;
+}
+
+.etiqueta-fila {
+    color: var(--texto-suave);
+    font-weight: 800;
+    text-align: center;
+}
+
+.asientos-fila {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(4, minmax(39px, 1fr)) 24px repeat(4, minmax(39px, 1fr));
+    gap: .6rem;
+}
+
+.asientos-fila .asiento:nth-child(4) {
+    grid-column: 4;
+}
+
+.asientos-fila .asiento:nth-child(5) {
+    grid-column: 6;
+}
+
+.asiento {
+    width: 100%;
+    min-width: 39px;
+    height: 44px;
+    border: 1px solid transparent;
+    border-radius: 8px 8px 4px 4px;
+    cursor: pointer;
+    font-weight: 800;
+    transition: transform .18s, border-color .18s, box-shadow .18s;
+}
+
+.asiento.libre {
+    color: var(--texto-suave);
+    background: var(--panel);
+    border-color: var(--borde);
+}
+
+.asiento.libre:hover {
+    transform: translateY(-2px);
+    border-color: #8591a0;
+}
+
+.asiento.seleccionado {
+    color: #161100;
+    background: var(--dorado);
+    box-shadow: 0 0 14px rgba(242, 201, 76, .5);
+    transform: translateY(-2px);
+}
+
+.asiento.ocupado {
+    color: rgba(0, 0, 0, .45);
+    background: var(--rojo);
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+.aviso {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 300;
+    max-width: 330px;
+    padding: .9rem 1rem;
+    color: #dff8e7;
+    border: 1px solid #34704b;
+    border-radius: 9px;
+    background: #123a25;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, .3);
+}
+
+.loader,
+.empty-state {
+    padding: 4rem 1rem;
+    text-align: center;
+    color: var(--texto-suave);
+}
+
+.sticky-footer {
+    position: fixed;
+    z-index: 100;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem max(1rem, calc((100vw - 1000px) / 2));
+    border-top: 1px solid var(--borde);
+    background: rgba(13, 18, 24, .97);
+    box-shadow: 0 -6px 25px rgba(0, 0, 0, .4);
+}
+
+.resumen p {
+    margin: 0;
+    color: var(--texto-suave);
+    font-size: .85rem;
+}
+
+.resumen h3 {
+    margin: .15rem 0 0;
+    font-size: 1.55rem;
+}
+
+.acciones-footer {
+    display: flex;
+    gap: .7rem;
+}
+
+.btn-continuar,
+.btn-cancelar,
+.btn-secundario,
+.btn-peligro {
+    border: 0;
+    border-radius: 7px;
+    padding: .8rem 1rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-continuar {
+    color: #171100;
+    background: var(--dorado);
+}
+
+.btn-cancelar,
+.btn-secundario {
+    color: #e4e9ef;
+    background: #27303b;
+}
+
+.btn-peligro {
+    color: white;
+    background: #b83d45;
+}
+
+.btn-continuar:disabled,
+.btn-cancelar:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.modal-backdrop {
+    position: fixed;
+    z-index: 200;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, .72);
+}
+
+.modal-salida {
+    max-width: 420px;
+    padding: 1.75rem;
+    text-align: center;
+    border: 1px solid #3c4652;
+    border-radius: 14px;
+    background: #111923;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
+}
+
+.modal-icono {
+    font-size: 2rem;
+}
+
+.modal-salida h2 {
+    margin: .75rem 0 .5rem;
+}
+
+.modal-salida p {
+    color: var(--texto-suave);
+    line-height: 1.5;
+}
+
+.modal-acciones {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .7rem;
+    margin-top: 1.25rem;
+}
+
+@media (max-width: 600px) {
+    .cine-container {
+        padding-top: 1.25rem;
+    }
+
+    .mapa-sala {
+        padding: .85rem;
+    }
+
+    .fila-asientos {
+        grid-template-columns: 18px minmax(350px, 1fr) 18px;
+        gap: .4rem;
+    }
+
+    .asientos-fila {
+        gap: .38rem;
+    }
+
+    .asientos-fila .asiento:nth-child(4) {
+        margin-right: .75rem;
+    }
+
+    .sticky-footer {
+        align-items: stretch;
+        flex-direction: column;
+        padding: .8rem 1rem;
+    }
+
+    .acciones-footer {
+        width: 100%;
+    }
+
+    .acciones-footer button {
+        flex: 1;
+    }
+
+    .detalle-funcion p {
+        font-size: .9rem;
+    }
+}
