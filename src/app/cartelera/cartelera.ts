@@ -1,11 +1,13 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Component, OnInit, signal } from '@angular/core';
 import { Pelicula, PeliculaService } from './pelicula.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cartelera',
   standalone: true,
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './cartelera.html',
   styleUrl: './cartelera.css'
 })
@@ -50,4 +52,6 @@ export class Cartelera implements OnInit {
   cambiarCategoria(categoria: string): void {
     this.categoriaActual.set(categoria);
   }
+
+ 
 }

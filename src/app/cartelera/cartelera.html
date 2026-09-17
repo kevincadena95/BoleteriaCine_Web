@@ -4,8 +4,8 @@
       <p class="saludo">Hola,</p>
       <h1>disfruta lo mejor del cine</h1>
       <p class="subtitulo">
-        G R A N D E S &nbsp; H I S T O R I A S<br>
-        S I E M P R E &nbsp; E N &nbsp; P A N T A L L A
+        GRANDES &nbsp; HISTORIAS<br>
+        SIEMPRE &nbsp; EN &nbsp; GRANDES &nbsp; PANTALLAS
       </p>
     </div>
 
@@ -57,25 +57,25 @@
               >
             </div>
 
-            <div class="etiqueta">
-              @if (pelicula.estado === 'cartelera') {
-                <span class="preventa">🎟 Pre-venta</span>
-              }
+        <div class="etiqueta">
+          @if (pelicula.estado === 'cartelera') {
+          <span class="preventa">🎟 Pre-venta</span>
+          }
 
-              @if (pelicula.estado === 'estreno') {
-                <span class="estreno">★ Estreno</span>
-              }
+          @if (pelicula.estado === 'estreno') {
+          <span class="estreno">★ Estreno</span>
+          }
 
-              @if (pelicula.estado === 'proximamente') {
-                <span class="proximo">Próximamente</span>
-              }
-            </div>
+          @if (pelicula.estado === 'proximamente') {
+          <span class="proximo">Próximamente</span>
+          }
+        </div>
 
-            <p class="clasificacion">{{ pelicula.clasificacion }}</p>
-            <h2>{{ pelicula.titulo }}</h2>
-          </article>
-        }
-      </div>
+        <p class="clasificacion">{{ pelicula.clasificacion }}</p>
+        <h2>{{ pelicula.titulo }}</h2>
+      </article>
+      }
+    </div>
     }
 
     @if (!cargando() && !error() && peliculasFiltradas().length === 0) {

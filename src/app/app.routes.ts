@@ -15,6 +15,7 @@ export const routes: Routes = [
     component: Asientos,
     canDeactivate: [(component: Asientos) => component.confirmarAbandono()]
   },
+  {path: 'boleteria/:slug',component: Boleteria},
   { path: 'dulceria', component: Dulceria },
   { path: 'confirmacion', component: Confirmacion },
   { path: 'mis-entradas', component: MisEntradas },

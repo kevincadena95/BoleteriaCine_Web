@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Pelicula, PeliculaService } from '../cartelera/pelicula.service';
 
 @Component({
