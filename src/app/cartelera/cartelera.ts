@@ -1,6 +1,5 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Component, OnInit, signal } from '@angular/core';
 import { Pelicula, PeliculaService } from './pelicula.service';
 import { RouterLink } from '@angular/router';
 

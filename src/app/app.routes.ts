@@ -9,7 +9,6 @@ import { Boleteria } from './boleteria/boleteria';
 export const routes: Routes = [
   { path: '', redirectTo: 'cartelera', pathMatch: 'full' },
   { path: 'cartelera', component: Cartelera },
-  { path: 'boleteria/:slug', component: Boleteria },
   { 
     path: 'asientos/:funcionId', 
     component: Asientos,

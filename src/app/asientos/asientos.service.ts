@@ -44,7 +44,7 @@ export class AsientosService {
       reconnectDelay: 5000,
       onConnect: () => {
         this.stompClient?.subscribe(`/topic/sala/${funcionId}`, (message: Message) => {
-          if (message.body) {
+          if (message.body) {+
             onUpdate(JSON.parse(message.body) as Asiento);
           }
         });
