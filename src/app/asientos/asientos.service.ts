@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Client, Message } from '@stomp/stompjs';
-import { Observable, of } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Asiento {
   id: string;
@@ -22,11 +22,18 @@ export class AsientosService {
   private readonly WS_URL = 'http://localhost:8080/ws';
 
   obtenerMapaAsientos(funcionId: string): Observable<Asiento[]> {
-    if (this.modoLocal) {
-      return of(this.obtenerMapaLocal(funcionId));
-    }
-
-    return this.http.get<Asiento[]>(`${this.API_URL}/${encodeURIComponent(funcionId)}/asientos`);
+    return this.http.get<Asiento[]>(`${this.API_URL}/${encodeURIComponent(funcionId)}/asientos`).pipe(
+      map(remotos => {
+        if (!this.modoLocal) return remotos;
+        const guardados = this.leerMapaLocal(funcionId);
+        const mapa = remotos.map(asiento => {
+          const estadoLocal = guardados.find(item => item.id === asiento.id)?.estado;
+          return asiento.estado === 'OCUPADO' ? asiento : { ...asiento, estado: estadoLocal ?? 'LIBRE' };
+        });
+        localStorage.setItem(this.claveLocal(funcionId), JSON.stringify(mapa));
+        return mapa;
+      })
+    );
   }
 
   async conectarWebSocket(funcionId: string, onUpdate: (asiento: Asiento) => void): Promise<void> {
@@ -44,7 +51,7 @@ export class AsientosService {
       reconnectDelay: 5000,
       onConnect: () => {
         this.stompClient?.subscribe(`/topic/sala/${funcionId}`, (message: Message) => {
-          if (message.body) {+
+          if (message.body) {
             onUpdate(JSON.parse(message.body) as Asiento);
           }
         });
@@ -82,20 +89,11 @@ export class AsientosService {
     }
   }
 
-  private obtenerMapaLocal(funcionId: string): Asiento[] {
-    const clave = this.claveLocal(funcionId);
-    const almacenado = localStorage.getItem(clave);
-    if (almacenado) return JSON.parse(almacenado) as Asiento[];
-
-    const mapa: Asiento[] = [];
-    for (const fila of ['A', 'B', 'C', 'D', 'E']) {
-      for (let numero = 1; numero <= 8; numero++) {
-        mapa.push({ id: `${fila}${numero}`, estado: 'LIBRE', precio: 6.5 });
-      }
-    }
-    localStorage.setItem(clave, JSON.stringify(mapa));
-    return mapa;
+  private leerMapaLocal(funcionId: string): Asiento[] {
+    try { return JSON.parse(localStorage.getItem(this.claveLocal(funcionId)) ?? '[]') as Asiento[]; }
+    catch { return []; }
   }
+  private obtenerMapaLocal(funcionId: string): Asiento[] { return this.leerMapaLocal(funcionId); }
 
   private conectarCanalLocal(funcionId: string, onUpdate: (asiento: Asiento) => void): void {
     this.canalLocal = new BroadcastChannel(`cine-asientos-${funcionId}`);

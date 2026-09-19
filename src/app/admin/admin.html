@@ -1,1 +1,160 @@
-<p>admin works!</p>
+<section class="admin">
+  <div class="contenedor">
+    <div class="cabecera">
+      <div>
+        <h1>Administración</h1>
+        <p>Salas y funciones de Metropoli Cine</p>
+      </div>
+      <button type="button" class="salir" (click)="salir()">Cerrar sesión</button>
+    </div>
+    @if (error()) {
+      <p class="mensaje error" role="alert">{{ error() }}</p>
+    }
+    @if (aviso()) {
+      <p class="mensaje exito" role="status">{{ aviso() }}</p>
+    }
+    <div class="columnas">
+      <section class="panel">
+        <h2>{{ salaEditando() === null ? 'Crear sala' : 'Editar sala' }}</h2>
+        <form [formGroup]="salaForm" (ngSubmit)="guardarSala()">
+          <label>Nombre<input formControlName="nombre" placeholder="Sala 1" /></label>
+          <div class="dos">
+            <label
+              >Filas<input
+                type="number"
+                min="1"
+                max="26"
+                formControlName="filas"
+                [readOnly]="salaEditando() !== null"
+            /></label>
+            <label
+              >Asientos por fila<input
+                type="number"
+                min="1"
+                max="50"
+                formControlName="columnas"
+                [readOnly]="salaEditando() !== null"
+            /></label>
+          </div>
+          <label
+            >Tipo<select formControlName="tipoSala">
+              <option value="STANDARD">STANDARD</option>
+              <option value="3D">3D</option>
+              <option value="4D">4D</option>
+              <option value="VIP">VIP</option>
+              <option value="IMAX">IMAX</option>
+            </select></label
+          >
+          @if (salaEditando() !== null) {
+            <small>Las dimensiones no pueden editarse porque los asientos ya están creados.</small>
+          }
+          <div class="acciones">
+            <button type="submit" [disabled]="guardando() || salaForm.invalid">Guardar sala</button>
+            @if (salaEditando() !== null) {
+              <button type="button" class="secundario" (click)="cancelarSala()">Cancelar</button>
+            }
+          </div>
+        </form>
+        <h3>Salas registradas</h3>
+        @for (sala of salas(); track sala.id) {
+          <div class="registro">
+            <div>
+              <strong>{{ sala.nombre }}</strong
+              ><small
+                >{{ sala.tipoSala }} · {{ sala.filas }} filas × {{ sala.columnas }} asientos</small
+              >
+            </div>
+            <div class="registro-acciones">
+              <button type="button" (click)="editarSala(sala)">Editar</button
+              ><button type="button" (click)="borrarSala(sala)">Eliminar</button>
+            </div>
+          </div>
+        } @empty {
+          <p class="vacio">Todavía no hay salas.</p>
+        }
+      </section>
+      <section class="panel">
+        <h2>{{ funcionEditando() === null ? 'Programar función' : 'Editar función' }}</h2>
+        <form [formGroup]="funcionForm" (ngSubmit)="guardarFuncion()">
+          <label
+            >Película<select formControlName="peliculaId">
+              <option [ngValue]="0">Selecciona una película</option>
+              @for (pelicula of peliculas(); track pelicula.id) {
+                <option [ngValue]="pelicula.id">
+                  {{ pelicula.titulo }} ({{ pelicula.duracion }} min)
+                </option>
+              }
+            </select></label
+          >
+          <label
+            >Sala<select formControlName="salaId">
+              <option [ngValue]="0">Selecciona una sala</option>
+              @for (sala of salas(); track sala.id) {
+                <option [ngValue]="sala.id">{{ sala.nombre }} · {{ sala.tipoSala }}</option>
+              }
+            </select></label
+          >
+          <div class="dos">
+            <label>Fecha<input type="date" formControlName="fecha" [min]="hoy" /></label
+            ><label>Hora<input type="time" formControlName="hora" /></label>
+          </div>
+          <div class="dos">
+            <label
+              >Formato<select formControlName="formato">
+                <option value="2D">2D</option>
+                <option value="3D">3D</option>
+                <option value="4D">4D</option>
+              </select></label
+            ><label
+              >Idioma<select formControlName="idioma">
+                <option value="DOBLADA">Doblada</option>
+                <option value="SUBTITULADA">Subtitulada</option>
+              </select></label
+            >
+          </div>
+          <label
+            >Precio de entrada ($)<input
+              type="number"
+              min="0.01"
+              step="0.01"
+              formControlName="precioBase"
+          /></label>
+          <small>Se reserva la duración de la película más 15 minutos para limpiar la sala.</small>
+          <div class="acciones">
+            <button
+              type="submit"
+              [disabled]="guardando() || funcionForm.invalid || salas().length === 0"
+            >
+              Guardar función
+            </button>
+            @if (funcionEditando() !== null) {
+              <button type="button" class="secundario" (click)="cancelarFuncion()">Cancelar</button>
+            }
+          </div>
+        </form>
+      </section>
+    </div>
+    <section class="panel lista">
+      <h2>Funciones programadas</h2>
+      @for (funcion of funciones(); track funcion.id) {
+        <div class="registro">
+          <div>
+            <strong>{{ funcion.tituloPelicula }}</strong
+            ><small
+              >{{ funcion.fecha }} · {{ funcion.hora.slice(0, 5) }} · {{ funcion.sala.nombre }} ·
+              {{ funcion.formato }} · {{ funcion.idioma }} · ${{
+                funcion.precioBase | number: '1.2-2'
+              }}</small
+            >
+          </div>
+          <div class="registro-acciones">
+            <button type="button" (click)="editarFuncion(funcion)">Editar</button
+            ><button type="button" (click)="borrarFuncion(funcion)">Eliminar</button>
+          </div>
+        </div>
+      } @empty {
+        <p class="vacio">Todavía no hay funciones.</p>
+      }
+    </section>
+  </div>
+</section>

@@ -9,8 +9,9 @@ import { CompraActiva, CompraService } from '../compra/compra.service';
   standalone: true,
   imports: [CurrencyPipe, RouterLink],
   templateUrl: './confirmacion.html',
-  styleUrls: ['./confirmacion.css']
+  styleUrls: ['./confirmacion.css'],
 })
+
 export class Confirmacion implements OnInit {
   private router = inject(Router);
   private asientosService = inject(AsientosService);
@@ -18,9 +19,23 @@ export class Confirmacion implements OnInit {
   confirmada = signal(false);
   compraMostrada = signal<CompraActiva | null>(null);
   codigoReserva = signal('');
-  asientosTexto = computed(() => this.compraMostrada()?.asientos.map(asiento => asiento.id).join(', ') ?? '');
-  subtotalAsientos = computed(() => this.compraMostrada()?.asientos.reduce((total, asiento) => total + asiento.precio, 0) ?? 0);
-  subtotalDulceria = computed(() => this.compraMostrada()?.dulceria.reduce((total, item) => total + item.precioUnitario * item.cantidad, 0) ?? 0);
+  asientosTexto = computed(
+    () =>
+      this.compraMostrada()
+        ?.asientos.map((asiento) => asiento.id)
+        .join(', ') ?? '',
+  );
+  subtotalAsientos = computed(
+    () =>
+      this.compraMostrada()?.asientos.reduce((total, asiento) => total + asiento.precio, 0) ?? 0,
+  );
+  subtotalDulceria = computed(
+    () =>
+      this.compraMostrada()?.dulceria.reduce(
+        (total, item) => total + item.precioUnitario * item.cantidad,
+        0,
+      ) ?? 0,
+  );
   total = computed(() => this.subtotalAsientos() + this.subtotalDulceria());
 
   ngOnInit(): void {

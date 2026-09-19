@@ -73,34 +73,23 @@
                 </div>
 
                 <div class="fecha">
-                    @for (fecha of fechas; track fecha.numero) {
-                    <button type="button" class="dia" [class.activo]="fechaSeleccionada() === fecha.numero"
-                        (click)="cambiarFecha(fecha.numero)">
-                        <span>{{ fecha.dia }}</span>
-                        <strong>{{ fecha.numero }}</strong>
+                    @for (fecha of fechas(); track fecha.valor) {
+                    <button type="button" class="dia" [class.activo]="fechaSeleccionada() === fecha.valor"
+                        (click)="cambiarFecha(fecha.valor)">
+                        <span>{{ fecha.dia }}</span><strong>{{ fecha.numero }}</strong>
                     </button>
                     }
                 </div>
 
-                @for (funcion of funciones; track funcion.formato) {
+                @for (funcion of funciones(); track funcion.id) {
                 <div class="funcion">
-                    <h2>{{ funcion.formato }}</h2>
-                    <p>{{ funcion.sala }}</p>
-
-                    <div class="horarios">
-                        @for (hora of funcion.horarios; track hora) {
-                        <button type="button" (click)="seleccionarFuncion(funcion, hora)">{{ hora }}</button>
-
-                        }
-                    </div>
+                    <h2>{{ funcion.formato }} · {{ funcion.idioma }}</h2>
+                    <p>{{ funcion.sala.nombre }} · ${{ funcion.precioBase }}</p>
+                    <div class="horarios"><button type="button" (click)="seleccionarFuncion(funcion)">{{ funcion.hora.slice(0, 5) }}</button></div>
                 </div>
                 }
-
-                @if (funciones.length === 0) {
-                <div class="sin-funciones">
-                    No hay funciones disponibles para este día.
-                </div>
-                }
+                @if (errorFunciones()) { <div class="sin-funciones">No se pudieron cargar las funciones. Revisa la conexión con el servidor.</div> }
+                @else if (funciones().length === 0) { <div class="sin-funciones">No hay funciones disponibles para este día.</div> }
                 }
             </div>
         </div>

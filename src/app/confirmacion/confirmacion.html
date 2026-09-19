@@ -1,51 +1,61 @@
 <main class="confirmacion-page">
   @if (compraMostrada(); as compra) {
-  <section class="tarjeta-confirmacion">
-    @if (confirmada()) {
-    <div class="exito" role="status">✓</div>
-    <p class="eyebrow">COMPRA CONFIRMADA</p>
-    <h1>¡Nos vemos en el cine!</h1>
-    <p class="subtitulo">Tu reserva quedó registrada. Conserva este resumen.</p>
-    } @else {
-    <p class="eyebrow">RESUMEN DE COMPRA</p>
-    <h1>Revisa tu función</h1>
-    <p class="subtitulo">Dulcería es opcional; puedes confirmar solo tus asientos.</p>
-    }
-
-    <div class="codigo">{{ codigoReserva() }}</div>
-
-    <div class="bloque">
-      <span>PELÍCULA</span><strong>{{ compra.funcion.pelicula }}</strong>
-      <p>{{ compra.funcion.fecha }} · {{ compra.funcion.hora }} · {{ compra.funcion.formato }}</p>
-      <p>{{ compra.funcion.sala }}</p>
-    </div>
-
-    <div class="bloque">
-      <span>ASIENTOS</span>
-      <strong>{{ asientosTexto() }}</strong>
-      <p>{{ compra.asientos.length }} asiento{{ compra.asientos.length === 1 ? '' : 's' }} · {{ subtotalAsientos() | currency:'USD' }}</p>
-    </div>
-
-    @if (compra.dulceria.length > 0) {
-    <div class="bloque">
-      <span>DULCERÍA</span>
-      @for (item of compra.dulceria; track item.nombre) {
-      <p>{{ item.cantidad }} × {{ item.nombre }} — {{ item.cantidad * item.precioUnitario | currency:'USD' }}</p>
+    <section class="tarjeta-confirmacion">
+      @if (confirmada()) {
+        <div class="exito" role="status">✓</div>
+        <p class="eyebrow">COMPRA CONFIRMADA</p>
+        <h1>¡Nos vemos en el cine!</h1>
+        <p class="subtitulo">Tu reserva quedó registrada. Conserva este resumen.</p>
+      } @else {
+        <p class="eyebrow">RESUMEN DE COMPRA</p>
+        <h1>Revisa tu función</h1>
+        <p class="subtitulo">Dulcería es opcional; puedes confirmar solo tus asientos.</p>
       }
-    </div>
-    }
 
-    <div class="total"><span>Total</span><strong>{{ total() | currency:'USD' }}</strong></div>
+      <div class="codigo">{{ codigoReserva() }}</div>
 
-    @if (!confirmada()) {
-    <div class="acciones">
-      <button class="btn-secundario" (click)="cancelarCompra()">Cancelar reserva</button>
-      <button class="btn-confirmar" (click)="confirmarCompra()">Confirmar compra</button>
-    </div>
-    } @else {
-    <a routerLink="/mis-entradas" class="btn-confirmar volver-cine">Ver mis boletos</a>
-    <a routerLink="/cartelera" class="btn-secundario volver-cine" style="margin-top: 10px;">Volver a cartelera</a>
-    }
-  </section>
+      <div class="bloque">
+        <span>PELÍCULA</span><strong>{{ compra.funcion.pelicula }}</strong>
+        <p>{{ compra.funcion.fecha }} · {{ compra.funcion.hora }} · {{ compra.funcion.formato }}</p>
+        <p>{{ compra.funcion.sala }}</p>
+      </div>
+
+      <div class="bloque">
+        <span>ASIENTOS</span>
+        <strong>{{ asientosTexto() }}</strong>
+        <p>
+          {{ compra.asientos.length }} asiento{{ compra.asientos.length === 1 ? '' : 's' }} ·
+          {{ subtotalAsientos() | currency: 'USD' }}
+        </p>
+      </div>
+
+      @if (compra.dulceria.length > 0) {
+        <div class="bloque">
+          <span>DULCERÍA</span>
+          @for (item of compra.dulceria; track item.nombre) {
+            <p>
+              {{ item.cantidad }} × {{ item.nombre }} —
+              {{ item.cantidad * item.precioUnitario | currency: 'USD' }}
+            </p>
+          }
+        </div>
+      }
+
+      <div class="total">
+        <span>Total</span><strong>{{ total() | currency: 'USD' }}</strong>
+      </div>
+
+      @if (!confirmada()) {
+        <div class="acciones">
+          <button class="btn-secundario" (click)="cancelarCompra()">Cancelar reserva</button>
+          <button class="btn-confirmar" (click)="confirmarCompra()">Confirmar compra</button>
+        </div>
+      } @else {
+        <a routerLink="/mis-entradas" class="btn-confirmar volver-cine">Ver mis boletos</a>
+        <a routerLink="/cartelera" class="btn-secundario volver-cine" style="margin-top: 10px"
+          >Volver a cartelera</a
+        >
+      }
+    </section>
   }
 </main>

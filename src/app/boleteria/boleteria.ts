@@ -1,166 +1,90 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { Pelicula, PeliculaService } from '../cartelera/pelicula.service';
+import { CineApi, FuncionCine } from '../admin/api.service';
 
 @Component({
   selector: 'app-boleteria',
   standalone: true,
   imports: [RouterLink],
   templateUrl: './boleteria.html',
-  styleUrl: './boleteria.css'
+  styleUrl: './boleteria.css',
 })
+
 export class Boleteria implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private peliculaService = inject(PeliculaService);
+  private api = inject(CineApi);
   pelicula = signal<Pelicula | null>(null);
   cargando = signal(true);
   error = signal(false);
+  errorFunciones = signal(false);
+  fechaSeleccionada = signal('');
+  fechas = signal<{ valor: string; dia: string; numero: string }[]>([]);
+  funciones = signal<FuncionCine[]>([]);
 
-  fechaSeleccionada = signal('17');
-
-  fechas = [
-    { dia: 'Jue.', numero: '17' },
-    { dia: 'Vie.', numero: '18' },
-    { dia: 'Sáb.', numero: '19' },
-    { dia: 'Dom.', numero: '20' },
-    { dia: 'Lun.', numero: '21' },
-    { dia: 'Mar.', numero: '22' },
-    { dia: 'Mié.', numero: '23' }
-  ];
-
-  funcionesPorFecha: Record<string, any[]> = {
-    '17': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['13:00', '14:30', '15:15', '16:45', '17:30', '19:00']
-      },
-      {
-        formato: '4D-Esp',
-        sala: 'SALA 4D',
-        horarios: ['13:45', '16:00', '18:15', '20:25']
-      }
-    ],
-
-    '18': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['12:00', '14:00', '16:00', '18:00', '20:00']
-      },
-      {
-        formato: '3D-Esp',
-        sala: 'SALA 3D',
-        horarios: ['15:30', '18:30', '21:30']
-      }
-    ],
-
-    '19': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['11:30', '13:45', '16:15', '19:00', '21:30']
-      }
-    ],
-
-    '20': [
-      {
-        formato: '4D-Esp',
-        sala: 'SALA 4D',
-        horarios: ['13:00', '15:30', '18:00', '20:30']
-      }
-    ],
-
-    '21': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['14:00', '16:30', '19:00', '21:15']
-      }
-    ],
-
-    '22': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['15:00', '17:30', '20:00']
-      },
-      {
-        formato: '4D-Esp',
-        sala: 'SALA 4D',
-        horarios: ['16:00', '19:00']
-      }
-    ],
-
-    '23': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['13:30', '16:00', '18:30', '21:00']
-      }
-    ]
-  };
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private peliculaService: PeliculaService
-  ) { }
-
-  ngOnInit(): void {
-    this.cargarPelicula();
-  }
-
-  async cargarPelicula(): Promise<void> {
-    this.cargando.set(true);
-    this.error.set(false);
-
+  async ngOnInit(): Promise<void> {
     try {
       const slug = this.route.snapshot.paramMap.get('slug');
-
-      if (!slug) {
-        this.error.set(true);
-        return;
-      }
-
-      const pelicula = await this.peliculaService.obtenerPeliculaPorSlug(slug);
-
+      const pelicula = slug ? await this.peliculaService.obtenerPeliculaPorSlug(slug) : undefined;
       if (!pelicula) {
         this.error.set(true);
         return;
       }
-
       this.pelicula.set(pelicula);
-    } catch (error) {
-      console.error('Error al cargar película:', error);
+      if (pelicula.estado !== 'proximamente') {
+        const fechas = Array.from({ length: 7 }, (_, i) => {
+          const d = new Date();
+          d.setHours(12, 0, 0, 0);
+          d.setDate(d.getDate() + i);
+          return {
+            valor: this.fechaLocal(d),
+            dia: new Intl.DateTimeFormat('es-EC', { weekday: 'short' }).format(d),
+            numero: String(d.getDate()),
+          };
+        });
+        this.fechas.set(fechas);
+        this.fechaSeleccionada.set(fechas[0].valor);
+        await this.cambiarFecha(fechas[0].valor);
+      }
+    } catch {
       this.error.set(true);
     } finally {
       this.cargando.set(false);
     }
   }
-
-  cambiarFecha(fecha: string): void {
+  private fechaLocal(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  async cambiarFecha(fecha: string): Promise<void> {
     this.fechaSeleccionada.set(fecha);
-  }
-
-  get funciones(): any[] {
-    return this.funcionesPorFecha[this.fechaSeleccionada()] || [];
-  }
-
-  seleccionarFuncion(funcion: any, hora: string): void {
+    this.funciones.set([]);
+    this.errorFunciones.set(false);
     const peli = this.pelicula();
     if (!peli) return;
-
-    // Generar un id ficticio para la función basado en la película, fecha y hora
-    const funcionId = `F${peli.id}-${this.fechaSeleccionada()}-${hora.replace(':', '')}`;
-
-    this.router.navigate(['/asientos', funcionId], {
+    try {
+      const funciones = await this.api.funciones(peli.id);
+      if (this.fechaSeleccionada() === fecha)
+        this.funciones.set(
+          funciones.filter((f) => f.fecha === fecha).sort((a, b) => a.hora.localeCompare(b.hora)),
+        );
+    } catch {
+      this.errorFunciones.set(true);
+    }
+  }
+  seleccionarFuncion(funcion: FuncionCine): void {
+    const peli = this.pelicula();
+    if (!peli) return;
+    this.router.navigate(['/asientos', funcion.id], {
       queryParams: {
         slug: peli.slug,
         pelicula: peli.titulo,
-        fecha: `2026-10-${this.fechaSeleccionada()}`,
-        formato: funcion.formato,
-        sala: funcion.sala,
-        hora: hora
-      }
+        fecha: funcion.fecha,
+        formato: `${funcion.formato} · ${funcion.idioma}`,
+        sala: funcion.sala.nombre,
+        hora: funcion.hora.slice(0, 5),
+      },
     });
   }
 }
