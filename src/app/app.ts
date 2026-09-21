@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
 
@@ -10,4 +11,22 @@ import { Footer } from './footer/footer';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {}
+export class App {
+  private readonly router = inject(Router);
+
+  readonly mostrarEstructura = signal(false);
+
+  constructor() {
+    this.router.events
+      .pipe(
+        filter(
+          (evento): evento is NavigationEnd =>
+            evento instanceof NavigationEnd
+        )
+      )
+      .subscribe(evento => {
+        const estaEnLogin = evento.urlAfterRedirects.startsWith('/login');
+        this.mostrarEstructura.set(!estaEnLogin);
+      });
+  }
+}

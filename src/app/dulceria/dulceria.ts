@@ -209,6 +209,7 @@ export class Dulceria {
   continuarAConfirmacion(): void {
     this.compraService.guardarDulceria(
       this.cartItems().map(item => ({
+        id: item.product.id,
         nombre: item.product.name,
         cantidad: item.quantity,
         precioUnitario: item.product.price

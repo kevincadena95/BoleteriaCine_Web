@@ -1,125 +1,149 @@
 :host {
-    display: block;
-    min-height: 100%;
+  min-height: 100%;
+  display: block;
 }
 
 .confirmacion-page {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 3rem 1rem;
-    background: radial-gradient(circle at top, #25364a, #080d13 48rem);
-    color: white;
-    font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 3rem 1rem;
+  background: radial-gradient(circle at top, #25364a, #080d13 48rem);
+  color: #ffffff;
+  font-family: system-ui, sans-serif;
 }
 
 .tarjeta-confirmacion {
-    width: min(100%, 560px);
-    padding: 2rem;
-    border: 1px solid #3c4652;
-    border-radius: 18px;
-    background: rgba(14, 21, 30, 0.94);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  width: min(100%, 560px);
+  padding: 2rem;
+  border: 1px solid #3c4652;
+  border-radius: 8px;
+  background: rgba(14, 21, 30, .94);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
+  box-sizing: border-box;
 }
 
 .eyebrow,
 .bloque span {
-    color: #f2c94c;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
+  color: #f2c94c;
+  font-size: .75rem;
+  font-weight: 800;
+  letter-spacing: .14em;
 }
 
 .tarjeta-confirmacion h1 {
-    margin: 0.4rem 0;
+  margin: .4rem 0;
 }
 
 .subtitulo {
-    color: #b8bec6;
+  color: #b8bec6;
 }
 
 .codigo {
-    display: inline-block;
-    margin: 1rem 0;
-    padding: 0.45rem 0.7rem;
-    color: #f2c94c;
-    border: 1px dashed #f2c94c;
-    border-radius: 6px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
+  display: inline-block;
+  margin: 1rem 0;
+  padding: .45rem .7rem;
+  border: 1px dashed #f2c94c;
+  border-radius: 4px;
+  color: #f2c94c;
+  font-weight: 800;
+  letter-spacing: .08em;
 }
 
 .bloque {
-    padding: 1rem 0;
-    border-top: 1px solid #303945;
+  padding: 1rem 0;
+  border-top: 1px solid #303945;
 }
 
 .bloque strong {
-    display: block;
-    margin-top: 0.35rem;
-    font-size: 1.1rem;
+  display: block;
+  margin-top: .35rem;
+  font-size: 1.1rem;
 }
 
 .bloque p {
-    margin: 0.3rem 0 0;
-    color: #b8bec6;
+  margin: .3rem 0 0;
+  color: #b8bec6;
 }
 
 .total {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.1rem 0;
-    border-top: 1px solid #303945;
-    font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 0;
+  border-top: 1px solid #303945;
+  font-size: 1.1rem;
 }
 
 .total strong {
-    color: #f2c94c;
-    font-size: 1.65rem;
+  color: #f2c94c;
+  font-size: 1.65rem;
 }
 
 .acciones {
-    display: flex;
-    gap: 0.75rem;
+  display: flex;
+  gap: .75rem;
 }
 
 .btn-confirmar,
 .btn-secundario {
-    flex: 1;
-    padding: 0.85rem 1rem;
-    border: 0;
-    border-radius: 8px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: 800;
-    cursor: pointer;
+  flex: 1;
+  padding: .85rem 1rem;
+  border: 0;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .btn-confirmar {
-    color: #171100;
-    background: #f2c94c;
+  background: #f2c94c;
+  color: #171100;
+}
+
+.btn-confirmar:disabled {
+  opacity: .55;
+  cursor: not-allowed;
 }
 
 .btn-secundario {
-    color: white;
-    background: #303945;
+  background: #303945;
+  color: #ffffff;
 }
 
 .volver-cine {
-    display: block;
-    margin-top: 1rem;
+  display: block;
+  margin-top: 1rem;
+}
+
+.enlace-cartelera {
+  margin-top: 10px;
+}
+
+.mensaje-error {
+  color: #ff8585;
 }
 
 .exito {
-    display: grid;
-    place-items: center;
-    width: 62px;
-    height: 62px;
-    margin-bottom: 1rem;
-    border-radius: 50%;
-    color: #071b0d;
-    background: #67d58b;
-    font-size: 2rem;
-    font-weight: 900;
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: #67d58b;
+  color: #071b0d;
+  font-size: 2rem;
+  font-weight: 900;
+}
+
+@media (max-width: 520px) {
+  .tarjeta-confirmacion {
+    padding: 1.4rem;
+  }
+
+  .acciones {
+    flex-direction: column;
+  }
 }

@@ -1,49 +1,95 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { CanMatchFn, Router } from '@angular/router';
 
-interface Perfil {
+export type RolUsuario = 'ADMIN' | 'CLIENTE';
+
+export interface PerfilUsuario {
   usuarioActual: string;
   roles: string[];
 }
 
-@Injectable({ providedIn: 'root' })
+interface RespuestaLogin {
+  mensaje: string;
+  usuario: string;
+  roles: string[];
+}
 
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private base = 'http://localhost:8080/api/auth';
-  usuario = signal('');
-  esAdmin = signal(false);
-  async perfil(): Promise<Perfil | null> {
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8080/api/auth';
+
+  readonly usuario = signal<string | null>(null);
+  readonly roles = signal<string[]>([]);
+
+  readonly autenticado = computed(() => this.usuario() !== null);
+  readonly esAdmin = computed(() => this.roles().includes('ROLE_ADMIN'));
+  readonly esCliente = computed(() => this.roles().includes('ROLE_CLIENTE'));
+  readonly rol = computed<RolUsuario | null>(() => {
+    if (this.esAdmin()) return 'ADMIN';
+    if (this.esCliente()) return 'CLIENTE';
+    return null;
+  });
+
+  async iniciarSesion(email: string, password: string): Promise<PerfilUsuario> {
+    const respuesta = await firstValueFrom(
+      this.http.post<RespuestaLogin>(
+        `${this.apiUrl}/login`,
+        { email, password },
+        { withCredentials: true }
+      )
+    );
+
+    const perfil: PerfilUsuario = {
+      usuarioActual: respuesta.usuario,
+      roles: respuesta.roles
+    };
+
+    this.establecerPerfil(perfil);
+    return perfil;
+  }
+
+  async obtenerPerfil(): Promise<PerfilUsuario | null> {
     try {
       const perfil = await firstValueFrom(
-        this.http.get<Perfil>(`${this.base}/perfil`, { withCredentials: true }),
+        this.http.get<PerfilUsuario>(
+          `${this.apiUrl}/perfil`,
+          { withCredentials: true }
+        )
       );
-      this.usuario.set(perfil.usuarioActual);
-      this.esAdmin.set(perfil.roles.includes('ROLE_ADMIN'));
+
+      this.establecerPerfil(perfil);
       return perfil;
     } catch {
-      this.usuario.set('');
-      this.esAdmin.set(false);
+      this.limpiarSesion();
       return null;
     }
   }
-  async login(email: string, password: string): Promise<void> {
-    await firstValueFrom(
-      this.http.post(`${this.base}/login`, { email, password }, { withCredentials: true }),
-    );
-    await this.perfil();
+
+  async cerrarSesion(): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post(
+          `${this.apiUrl}/logout`,
+          {},
+          { withCredentials: true }
+        )
+      );
+    } catch {
+      // La sesión local también se limpia si el servidor ya la había cerrado.
+    } finally {
+      this.limpiarSesion();
+    }
   }
-  async logout(): Promise<void> {
-    await firstValueFrom(this.http.post(`${this.base}/logout`, {}, { withCredentials: true }));
-    this.usuario.set('');
-    this.esAdmin.set(false);
+
+  private establecerPerfil(perfil: PerfilUsuario): void {
+    this.usuario.set(perfil.usuarioActual);
+    this.roles.set(perfil.roles);
+  }
+
+  private limpiarSesion(): void {
+    this.usuario.set(null);
+    this.roles.set([]);
   }
 }
-export const adminGuard: CanMatchFn = async () => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
-  const perfil = await auth.perfil();
-  return perfil?.roles.includes('ROLE_ADMIN') ? true : router.createUrlTree(['/login']);
-};

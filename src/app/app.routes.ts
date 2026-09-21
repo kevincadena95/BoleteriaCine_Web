@@ -7,21 +7,50 @@ import { MisEntradas } from './mis-entradas/mis-entradas';
 import { Boleteria } from './boleteria/boleteria';
 import { Admin } from './admin/admin';
 import { Login } from './login/login';
-import { adminGuard } from './login/auth.service';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'cartelera', pathMatch: 'full' },
-  { path: 'cartelera', component: Cartelera },
-  { path: 'login', component: Login },
-  { path: 'admin', component: Admin, canMatch: [adminGuard] },
-  { 
-    path: 'asientos/:funcionId', 
-    component: Asientos,
-    canDeactivate: [(component: Asientos) => component.confirmarAbandono()]
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
   },
-  {path: 'boleteria/:slug',component: Boleteria},
-  { path: 'dulceria', component: Dulceria },
-  { path: 'confirmacion', component: Confirmacion },
-  { path: 'mis-entradas', component: MisEntradas },
-  { path: '**', redirectTo: 'cartelera' }
+  {
+    path: 'login',
+    component: Login
+  },
+  {
+    path: 'cartelera',
+    component: Cartelera
+  },
+  {
+    path: 'boleteria/:slug',
+    component: Boleteria
+  },
+  {
+    path: 'asientos/:funcionId',
+    component: Asientos,
+    canDeactivate: [
+      (component: Asientos) => component.confirmarAbandono()
+    ]
+  },
+  {
+    path: 'dulceria',
+    component: Dulceria
+  },
+  {
+    path: 'confirmacion',
+    component: Confirmacion
+  },
+  {
+    path: 'mis-entradas',
+    component: MisEntradas
+  },
+  {
+    path: 'admin',
+    component: Admin
+  },
+  {
+    path: '**',
+    redirectTo: 'login'
+  }
 ];

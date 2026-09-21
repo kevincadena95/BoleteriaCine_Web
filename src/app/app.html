@@ -1,5 +1,11 @@
-<app-header></app-header>
+@if (mostrarEstructura()) {
+  <app-header></app-header>
+}
+
 <main>
   <router-outlet></router-outlet>
 </main>
-<app-footer></app-footer>
+
+@if (mostrarEstructura()) {
+  <app-footer></app-footer>
+}
