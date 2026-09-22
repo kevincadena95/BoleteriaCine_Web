@@ -4,40 +4,47 @@
       <img
         src="assets/logo/logo-micine.png"
         alt="Metropoli Cine"
-        class="logo-img">
+        class="logo-img"
+      />
     </a>
 
-    <nav class="nav">
-      <a routerLink="/cartelera" routerLinkActive="active">
+    <nav class="nav" aria-label="Navegación principal">
+      <a routerLink="/cartelera" routerLinkActive="active" class="enlace-nav">
         Cartelera
       </a>
 
-      <a routerLink="/dulceria" routerLinkActive="active">
+      <a routerLink="/dulceria" routerLinkActive="active" class="enlace-nav">
         Dulcería
       </a>
 
-      <a routerLink="/mis-entradas" routerLinkActive="active">
-        Mis boletos
-      </a>
+      @if (auth.autenticado()) {
 
       @if (auth.esAdmin()) {
-        <a routerLink="/admin" routerLinkActive="active">
-          Administración
-        </a>
+      <a routerLink="/admin" routerLinkActive="active" class="enlace-nav">
+        Administración
+      </a>
       }
 
       <div class="sesion">
-        <span class="usuario">♙</span>
+        <a
+          routerLink="/perfil"
+          routerLinkActive="cuenta-activa"
+          class="cuenta"
+          aria-label="Abrir mi perfil"
+        >
+          <span class="usuario" aria-hidden="true">♙</span>
 
-        <div class="datos-usuario">
-          <span>{{ auth.usuario() }}</span>
-          <small>{{ auth.rol() }}</small>
-        </div>
+          <span class="datos-usuario">
+            <span>{{ auth.usuario() }}</span>
+            <small>{{ auth.rol() }}</small>
+          </span>
+        </a>
 
-        <button type="button" (click)="cerrarSesion()">
-          Salir
-        </button>
+        <button type="button" (click)="cerrarSesion()">Salir</button>
       </div>
+      } @else if (auth.sesionComprobada()) {
+      <a routerLink="/login" class="iniciar-sesion"> Iniciar sesión </a>
+      }
     </nav>
   </div>
 </header>

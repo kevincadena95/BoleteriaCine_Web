@@ -37,7 +37,7 @@
   gap: 32px;
 }
 
-.nav a {
+.enlace-nav {
   height: 92px;
   position: relative;
   display: flex;
@@ -48,16 +48,16 @@
   white-space: nowrap;
 }
 
-.nav a:hover {
+.enlace-nav:hover {
   color: #f2c94c;
 }
 
-.nav a.active {
+.enlace-nav.active {
   color: #f2c94c;
   font-weight: 600;
 }
 
-.nav a.active::after {
+.enlace-nav.active::after {
   content: "";
   position: absolute;
   left: 0;
@@ -74,6 +74,23 @@
   gap: 10px;
   padding-left: 18px;
   border-left: 1px solid #303945;
+}
+
+.cuenta {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  text-decoration: none;
+}
+
+.cuenta:hover,
+.cuenta.cuenta-activa {
+  border-color: #3f4b58;
+  background: #101720;
 }
 
 .usuario {
@@ -120,6 +137,20 @@
   color: #f2c94c;
 }
 
+.iniciar-sesion {
+  padding: 10px 14px;
+  border: 1px solid #4a5664;
+  border-radius: 3px;
+  color: #e5e8ec;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.iniciar-sesion:hover {
+  border-color: #f2c94c;
+  color: #f2c94c;
+}
+
 @media (max-width: 1100px) {
   .header-container {
     width: calc(100% - 50px);
@@ -129,7 +160,7 @@
     gap: 18px;
   }
 
-  .nav a {
+  .enlace-nav {
     font-size: 14px;
   }
 
@@ -163,12 +194,12 @@
     gap: 5px 20px;
   }
 
-  .nav a {
+  .enlace-nav {
     height: 38px;
     font-size: 13px;
   }
 
-  .nav a.active::after {
+  .enlace-nav.active::after {
     height: 2px;
   }
 

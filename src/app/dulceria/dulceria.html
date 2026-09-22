@@ -1,39 +1,56 @@
 <div class="dulceria-page">
-
   <main class="dulceria-layout">
-
     <section class="catalog-panel">
-
-
       <div class="filter-bar" role="group" aria-label="Filtrar productos">
-        <button class="filter-btn" [class.active]="activeFilter() === 'todos'" (click)="setFilter('todos')">
+        <button
+          class="filter-btn"
+          [class.active]="activeFilter() === 'todos'"
+          (click)="setFilter('todos')"
+        >
           Todos
         </button>
-        <button class="filter-btn" [class.active]="activeFilter() === 'combo'" (click)="setFilter('combo')">
+        <button
+          class="filter-btn"
+          [class.active]="activeFilter() === 'combo'"
+          (click)="setFilter('combo')"
+        >
           Combos
         </button>
-        <button class="filter-btn" [class.active]="activeFilter() === 'individual'" (click)="setFilter('individual')">
+        <button
+          class="filter-btn"
+          [class.active]="activeFilter() === 'individual'"
+          (click)="setFilter('individual')"
+        >
           Individuales
         </button>
       </div>
 
       <p class="results-count">
-        {{ filteredProducts().length }} producto{{ filteredProducts().length !== 1 ? 's' : '' }} disponible{{
-        filteredProducts().length !== 1 ? 's' : '' }}
+        {{ filteredProducts().length }} producto{{ filteredProducts().length !==
+        1 ? 's' : '' }} disponible{{ filteredProducts().length !== 1 ? 's' : ''
+        }}
       </p>
 
       <div class="products-grid">
         @for (product of filteredProducts(); track product.id) {
-        <article class="product-card" [class.in-cart]="getItemQuantity(product.id) > 0">
-
-
-          <span class="category-badge" [class.combo]="product.category === 'combo'">
+        <article
+          class="product-card"
+          [class.in-cart]="getItemQuantity(product.id) > 0"
+        >
+          <span
+            class="category-badge"
+            [class.combo]="product.category === 'combo'"
+          >
             {{ product.category === 'combo' ? 'Combo' : 'Individual' }}
           </span>
 
-
           <div class="product-image-wrapper">
-            <img [src]="product.image" [alt]="product.name" class="product-image" (error)="onImageError($event)" />
+            <img
+              [src]="product.image"
+              [alt]="product.name"
+              class="product-image"
+              (error)="onImageError($event)"
+            />
             @if (!product.image) {
             <div class="image-placeholder">
               <span>{{ product.category === 'combo' ? '' : '' }}</span>
@@ -41,40 +58,50 @@
             }
           </div>
 
-
           <div class="product-info">
             <h3 class="product-name">{{ product.name }}</h3>
             <p class="product-description">{{ product.description }}</p>
-            <span class="product-price">${{ product.price | number:'1.2-2' }}</span>
+            <span class="product-price"
+              >${{ product.price | number:'1.2-2' }}</span
+            >
           </div>
-
 
           <div class="product-controls">
             @if (getItemQuantity(product.id) === 0) {
-            <button class="btn-add" (click)="addToCart(product)"
-              [attr.aria-label]="'Agregar ' + product.name + ' al carrito'">
+            <button
+              class="btn-add"
+              (click)="addToCart(product)"
+              [attr.aria-label]="'Agregar ' + product.name + ' al carrito'"
+            >
               + Agregar
             </button>
             } @else {
             <div class="quantity-controls">
-              <button class="qty-btn" (click)="removeFromCart(product.id)"
-                [attr.aria-label]="'Quitar uno de ' + product.name">−</button>
+              <button
+                class="qty-btn"
+                (click)="removeFromCart(product.id)"
+                [attr.aria-label]="'Quitar uno de ' + product.name"
+              >
+                −
+              </button>
               <span class="qty-value">{{ getItemQuantity(product.id) }}</span>
-              <button class="qty-btn" (click)="addToCart(product)"
-                [attr.aria-label]="'Agregar otro ' + product.name">+</button>
+              <button
+                class="qty-btn"
+                (click)="addToCart(product)"
+                [attr.aria-label]="'Agregar otro ' + product.name"
+              >
+                +
+              </button>
             </div>
             }
           </div>
-
         </article>
         }
       </div>
-
     </section>
 
     <aside class="cart-panel">
       <div class="cart-sticky">
-
         <div class="cart-header">
           <h2>Tu selección</h2>
           @if (cartCount() > 0) {
@@ -88,27 +115,40 @@
           <p>Aún no has agregado productos.</p>
           <small>¡Selecciona algo del catálogo!</small>
         </div>
-        }
-
-        @if (cartItems().length > 0) {
+        } @if (cartItems().length > 0) {
         <ul class="cart-list">
           @for (item of cartItems(); track item.product.id) {
           <li class="cart-item">
             <div class="cart-item-info">
               <span class="cart-item-name">{{ item.product.name }}</span>
-              <span class="cart-item-unit-price">${{ item.product.price | number:'1.2-2' }} c/u</span>
+              <span class="cart-item-unit-price"
+                >${{ item.product.price | number:'1.2-2' }} c/u</span
+              >
             </div>
             <div class="cart-item-right">
               <div class="cart-qty-controls">
-                <button class="cart-qty-btn" (click)="removeFromCart(item.product.id)">−</button>
+                <button
+                  class="cart-qty-btn"
+                  (click)="removeFromCart(item.product.id)"
+                >
+                  −
+                </button>
                 <span class="cart-qty">{{ item.quantity }}</span>
-                <button class="cart-qty-btn" (click)="addToCart(item.product)">+</button>
+                <button class="cart-qty-btn" (click)="addToCart(item.product)">
+                  +
+                </button>
               </div>
               <span class="cart-item-subtotal">
                 ${{ (item.product.price * item.quantity) | number:'1.2-2' }}
               </span>
-              <button class="cart-remove-btn" (click)="removeItemCompletely(item.product.id)"
-                [attr.aria-label]="'Eliminar ' + item.product.name" title="Eliminar">✕</button>
+              <button
+                class="cart-remove-btn"
+                (click)="removeItemCompletely(item.product.id)"
+                [attr.aria-label]="'Eliminar ' + item.product.name"
+                title="Eliminar"
+              >
+                ✕
+              </button>
             </div>
           </li>
           }
@@ -117,18 +157,24 @@
         <div class="cart-footer">
           <div class="cart-total-row">
             <span>Total</span>
-            <span class="cart-total-amount">${{ cartTotal() | number:'1.2-2' }}</span>
+            <span class="cart-total-amount"
+              >${{ cartTotal() | number:'1.2-2' }}</span
+            >
           </div>
 
           <div class="cart-actions">
             <button class="btn-clear" (click)="clearCart()">Vaciar</button>
-            <button class="btn-checkout" (click)="continuarAConfirmacion()">Continuar →</button>
+            <button class="btn-checkout" (click)="continuarAConfirmacion()">
+              Continuar →
+            </button>
           </div>
         </div>
         }
-
       </div>
     </aside>
-
   </main>
 </div>
+
+@if (mostrarLoginRequerido()) {
+<app-login-requerido (cerrar)="cerrarLoginRequerido()"> </app-login-requerido>
+}

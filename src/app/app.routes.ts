@@ -1,56 +1,66 @@
-import { Routes } from '@angular/router';
-import { Cartelera } from './cartelera/cartelera';
-import { Dulceria } from './dulceria/dulceria';
-import { Asientos } from './asientos/asientos';
-import { Confirmacion } from './confirmacion/confirmacion';
-import { MisEntradas } from './mis-entradas/mis-entradas';
-import { Boleteria } from './boleteria/boleteria';
-import { Admin } from './admin/admin';
-import { Login } from './login/login';
+import { Routes } from "@angular/router";
+import { Cartelera } from "./cartelera/cartelera";
+import { Dulceria } from "./dulceria/dulceria";
+import { Asientos } from "./asientos/asientos";
+import { Confirmacion } from "./confirmacion/confirmacion";
+import { MisEntradas } from "./mis-entradas/mis-entradas";
+import { Boleteria } from "./boleteria/boleteria";
+import { Admin } from "./admin/admin";
+import { Login } from "./login/login";
+import { Perfil } from "./perfil/perfil";
+import { adminGuard, authGuard, invitadoGuard } from "./guards/auth.guard";
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    path: "",
+    redirectTo: "cartelera",
+    pathMatch: "full",
   },
   {
-    path: 'login',
-    component: Login
+    path: "login",
+    component: Login,
+    canActivate: [invitadoGuard],
   },
   {
-    path: 'cartelera',
-    component: Cartelera
+    path: "cartelera",
+    component: Cartelera,
   },
   {
-    path: 'boleteria/:slug',
-    component: Boleteria
+    path: "boleteria/:slug",
+    component: Boleteria,
   },
   {
-    path: 'asientos/:funcionId',
+    path: "asientos/:funcionId",
     component: Asientos,
-    canDeactivate: [
-      (component: Asientos) => component.confirmarAbandono()
-    ]
+    canActivate: [authGuard],
+    canDeactivate: [(component: Asientos) => component.confirmarAbandono()],
   },
   {
-    path: 'dulceria',
-    component: Dulceria
+    path: "dulceria",
+    component: Dulceria,
   },
   {
-    path: 'confirmacion',
-    component: Confirmacion
+    path: "confirmacion",
+    component: Confirmacion,
+    canActivate: [authGuard],
   },
   {
-    path: 'mis-entradas',
-    component: MisEntradas
+    path: "mis-entradas",
+    component: MisEntradas,
+    canActivate: [authGuard],
   },
   {
-    path: 'admin',
-    component: Admin
+    path: "perfil",
+    component: Perfil,
+    canActivate: [authGuard],
   },
   {
-    path: '**',
-    redirectTo: 'login'
-  }
+    path: "admin",
+    component: Admin,
+    canActivate: [adminGuard],
+  },
+  {
+    path: "**",
+    redirectTo: "cartelera",
+  },
 ];

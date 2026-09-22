@@ -1,100 +1,192 @@
 :host {
-    display: block;
+  display: block;
 }
 
 .entradas-page {
-    min-height: 100vh;
-    padding: 3rem 1rem;
-    color: #fff;
-    background: #080d13;
-    font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  padding: 3rem 1rem;
+  color: #ffffff;
+  background: #080d13;
+  font-family: system-ui, sans-serif;
 }
 
 .entradas-contenido {
-    width: min(100%, 820px);
-    margin: auto;
+  width: min(100%, 820px);
+  margin: auto;
 }
 
 .eyebrow {
-    color: #f2c94c;
-    font-size: .75rem;
-    font-weight: 800;
-    letter-spacing: .14em;
+  color: #f2c94c;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
 }
 
 .entradas-contenido h1 {
-    margin-top: .4rem;
+  margin-top: 0.4rem;
 }
 
 .intro {
-    max-width: 620px;
-    color: #aeb8c5;
+  max-width: 620px;
+  color: #aeb8c5;
+}
+
+.estado-lista {
+  margin-top: 2rem;
+  padding: 2rem;
+  border: 1px solid #303945;
+  background: #101720;
+  color: #b8bec6;
+  text-align: center;
+}
+
+.estado-lista p {
+  margin-top: 0;
+}
+
+.estado-lista button {
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 3px;
+  background: #f2c94c;
+  color: #171100;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.estado-error {
+  border-color: #754242;
 }
 
 .entrada {
-    display: grid;
-    grid-template-columns: 185px 1fr;
-    gap: 1.3rem;
-    margin-top: 1.2rem;
-    padding: 1.4rem;
-    border: 1px solid #303945;
-    border-radius: 14px;
-    background: #101720;
+  display: grid;
+  grid-template-columns: 185px 1fr;
+  align-items: stretch;
+  gap: 1.5rem;
+  margin-top: 1.2rem;
+  padding: 1.4rem;
+  border: 1px solid #303945;
+  border-radius: 14px;
+  background: #101720;
 }
 
 .entrada-codigo {
-    display: flex;
-    flex-direction: column;
-    gap: .45rem;
-    color: #f2c94c;
-    font-size: .75rem;
-    font-weight: 800;
-    letter-spacing: .08em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  color: #f2c94c;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
 }
 
 .entrada-codigo strong {
-    font-size: 1.15rem;
+  font-size: 1.15rem;
+}
+
+.portada-boleto {
+  width: 135px;
+  aspect-ratio: 2 / 3;
+  margin-top: 10px;
+  border: 1px solid #465363;
+  border-radius: 5px;
+  background: #080d13;
+  object-fit: cover;
+  object-position: center;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.portada-vacia {
+  width: 135px;
+  aspect-ratio: 2 / 3;
+  display: grid;
+  place-items: center;
+  margin-top: 10px;
+  border: 1px solid #465363;
+  border-radius: 5px;
+  background: #080d13;
+  color: #f2c94c;
+  font-size: 32px;
+  box-sizing: border-box;
+}
+
+.entrada-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .entrada-info h2 {
-    margin: 0 0 .4rem;
+  margin: 0 0 10px;
 }
 
 .entrada-info p {
-    margin: .25rem 0;
-    color: #b8bec6;
+  margin: 4px 0;
+  color: #b8bec6;
+  line-height: 1.5;
+}
+
+.snacks-resumen {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.65rem;
+  padding-top: 0.35rem;
+}
+
+.snacks-resumen span {
+  color: #f2c94c;
 }
 
 .sin-entradas {
-    margin-top: 2rem;
-    padding: 3rem 1rem;
-    text-align: center;
-    border: 1px dashed #3c4652;
-    border-radius: 14px;
-    color: #b8bec6;
+  margin-top: 2rem;
+  padding: 3rem 1rem;
+  border: 1px dashed #3c4652;
+  border-radius: 14px;
+  color: #b8bec6;
+  text-align: center;
 }
 
 .sin-entradas span {
-    font-size: 2rem;
+  font-size: 2rem;
 }
 
 .sin-entradas h2 {
-    color: #fff;
+  color: #ffffff;
 }
 
 .sin-entradas a {
-    display: inline-block;
-    margin-top: .75rem;
-    padding: .75rem 1rem;
-    border-radius: 7px;
-    color: #171100;
-    background: #f2c94c;
-    text-decoration: none;
-    font-weight: 800;
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 7px;
+  background: #f2c94c;
+  color: #171100;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 @media (max-width: 600px) {
-    .entrada {
-        grid-template-columns: 1fr;
-    }
+  .entrada {
+    grid-template-columns: 1fr;
+  }
+
+  .entrada-codigo {
+    align-items: center;
+    text-align: center;
+  }
+
+  .entrada-info {
+    text-align: center;
+  }
+
+  .portada-boleto,
+  .portada-vacia {
+    width: 130px;
+  }
+
+  .snacks-resumen {
+    justify-content: center;
+  }
 }

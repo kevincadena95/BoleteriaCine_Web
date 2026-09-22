@@ -1,11 +1,11 @@
 <section class="cartelera">
   <div class="cartelera-container">
     <div class="presentacion">
-      <p class="saludo">Hola,</p>
+      <p class="saludo">Bienvenido,</p>
       <h1>disfruta lo mejor del cine</h1>
       <p class="subtitulo">
-        GRANDES &nbsp; HISTORIAS<br>
-        SIEMPRE &nbsp; EN &nbsp; GRANDES &nbsp; PANTALLAS
+        GRANDES HISTORIAS<br>
+        SIEMPRE EN GRANDES PANTALLAS
       </p>
     </div>
 
@@ -13,22 +13,21 @@
       <button
         type="button"
         [class.active]="categoriaActual() === 'cartelera'"
-        (click)="cambiarCategoria('cartelera')"
-      >
+        (click)="cambiarCategoria('cartelera')">
         Cartelera
       </button>
+
       <button
         type="button"
         [class.active]="categoriaActual() === 'estreno'"
-        (click)="cambiarCategoria('estreno')"
-      >
+        (click)="cambiarCategoria('estreno')">
         Ahora
       </button>
+
       <button
         type="button"
         [class.active]="categoriaActual() === 'proximamente'"
-        (click)="cambiarCategoria('proximamente')"
-      >
+        (click)="cambiarCategoria('proximamente')">
         Próximamente
       </button>
     </div>
@@ -49,33 +48,34 @@
     @if (!cargando() && !error()) {
       <div class="peliculas">
         @for (pelicula of peliculasFiltradas(); track pelicula.id) {
-          <article class="pelicula" (click)="seleccionarPelicula(pelicula)" style="cursor: pointer;">
+          <article
+            class="pelicula"
+            (click)="seleccionarPelicula(pelicula)"
+            style="cursor: pointer;">
+
             <div class="poster">
-              <img
-                [src]="pelicula.imagen"
-                [alt]="pelicula.titulo"
-              >
+              <img [src]="pelicula.imagen" [alt]="pelicula.titulo">
             </div>
 
-        <div class="etiqueta">
-          @if (pelicula.estado === 'cartelera') {
-          <span class="preventa">🎟 Pre-venta</span>
-          }
+            <div class="etiqueta">
+              @if (pelicula.estado === 'cartelera') {
+                <span class="preventa">🎟 Pre-venta</span>
+              }
 
-          @if (pelicula.estado === 'estreno') {
-          <span class="estreno">★ Estreno</span>
-          }
+              @if (pelicula.estado === 'estreno') {
+                <span class="estreno">★ Estreno</span>
+              }
 
-          @if (pelicula.estado === 'proximamente') {
-          <span class="proximo">Próximamente</span>
-          }
-        </div>
+              @if (pelicula.estado === 'proximamente') {
+                <span class="proximo">Próximamente</span>
+              }
+            </div>
 
-        <p class="clasificacion">{{ pelicula.clasificacion }}</p>
-        <h2>{{ pelicula.titulo }}</h2>
-      </article>
-      }
-    </div>
+            <p class="clasificacion">{{ pelicula.clasificacion }}</p>
+            <h2>{{ pelicula.titulo }}</h2>
+          </article>
+        }
+      </div>
     }
 
     @if (!cargando() && !error() && peliculasFiltradas().length === 0) {

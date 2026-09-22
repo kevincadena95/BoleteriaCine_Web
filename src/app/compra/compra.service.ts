@@ -1,7 +1,7 @@
-import { Injectable, computed, signal, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
-import { Asiento } from '../asientos/asientos.service';
+import { HttpClient } from "@angular/common/http";
+import { computed, inject, Injectable, signal } from "@angular/core";
+import { firstValueFrom } from "rxjs";
+import { Asiento } from "../asientos/asientos.service";
 
 export interface DetalleFuncion {
   funcionId: string;
@@ -20,14 +20,9 @@ export interface ItemDulceriaResumen {
 }
 
 export interface CompraActiva {
-  funcion: DetalleFuncion;
+  funcion: DetalleFuncion | null;
   asientos: Asiento[];
   dulceria: ItemDulceriaResumen[];
-}
-
-export interface EntradaConfirmada extends CompraActiva {
-  codigo: string;
-  confirmadaEn: string;
 }
 
 export interface RespuestaCompra {
@@ -36,27 +31,53 @@ export interface RespuestaCompra {
   estado: string;
 }
 
-@Injectable({ providedIn: 'root' })
+export interface SnackEntrada {
+  nombre: string;
+  cantidad: number;
+  precioUnitario: number;
+  subtotal: number;
+}
+
+export interface EntradaUsuario {
+  id: number;
+  codigo: string;
+  fechaCompra: string;
+  total: number;
+  estado: string;
+  pelicula: string;
+  fechaFuncion: string;
+  hora: string;
+  formato: string;
+  idioma: string;
+  sala: string;
+  asientos: string[];
+  snacks: SnackEntrada[];
+}
+
+@Injectable({ providedIn: "root" })
 export class CompraService {
   private readonly http = inject(HttpClient);
-  private readonly claveSesion = 'cine:compra-activa';
-  private readonly claveHistorial = 'cine:entradas-confirmadas';
+  private readonly apiUrl = "http://localhost:8080/api/compras";
+  private readonly claveSesion = "cine:compra-activa";
 
   readonly compra = signal<CompraActiva | null>(this.leerSesion());
-  readonly entradas = signal<EntradaConfirmada[]>(this.leerHistorial());
 
   readonly subtotalAsientos = computed(() => {
-    return this.compra()?.asientos.reduce(
-      (total, asiento) => total + asiento.precio,
-      0
-    ) ?? 0;
+    return (
+      this.compra()?.asientos.reduce(
+        (total, asiento) => total + asiento.precio,
+        0,
+      ) ?? 0
+    );
   });
 
   readonly subtotalDulceria = computed(() => {
-    return this.compra()?.dulceria.reduce(
-      (total, item) => total + item.precioUnitario * item.cantidad,
-      0
-    ) ?? 0;
+    return (
+      this.compra()?.dulceria.reduce(
+        (total, item) => total + item.precioUnitario * item.cantidad,
+        0,
+      ) ?? 0
+    );
   });
 
   readonly total = computed(() => {
@@ -67,13 +88,23 @@ export class CompraService {
     this.guardar({
       funcion,
       asientos,
-      dulceria: []
+      dulceria: [],
     });
   }
 
   guardarDulceria(dulceria: ItemDulceriaResumen[]): void {
-    const actual = this.compra();
-    if (actual) this.guardar({ ...actual, dulceria });
+    const compraActual = this.compra();
+
+    if (compraActual) {
+      this.guardar({ ...compraActual, dulceria });
+      return;
+    }
+
+    this.guardar({
+      funcion: null,
+      asientos: [],
+      dulceria,
+    });
   }
 
   limpiar(): void {
@@ -82,54 +113,63 @@ export class CompraService {
   }
 
   async registrarEnBackend(): Promise<RespuestaCompra> {
-    const actual = this.compra();
+    const compraActual = this.compra();
 
-    if (!actual) {
-      throw new Error('No hay una compra activa');
+    if (!compraActual) {
+      throw new Error("No hay una compra activa");
     }
 
-    if (actual.asientos.some(asiento => !asiento.asientoId)) {
-      throw new Error('Recarga el mapa de asientos para obtener los ID de la sala');
+    const tieneBoletos = compraActual.asientos.length > 0;
+    const tieneSnacks = compraActual.dulceria.length > 0;
+
+    if (!tieneBoletos && !tieneSnacks) {
+      throw new Error("La compra no contiene boletos ni productos");
     }
 
-    if (actual.dulceria.some(item => !item.id)) {
-      throw new Error('Vuelve a escoger los productos de dulcería');
+    if (tieneBoletos && !compraActual.funcion) {
+      throw new Error("No se encontró la función de los boletos");
+    }
+
+    if (compraActual.asientos.some((asiento) => !asiento.asientoId)) {
+      throw new Error(
+        "Recarga el mapa de asientos para obtener los ID de la sala",
+      );
+    }
+
+    if (compraActual.dulceria.some((item) => !item.id)) {
+      throw new Error("Vuelve a escoger los productos de dulcería");
     }
 
     const solicitud = {
-      funcionId: Number(actual.funcion.funcionId),
-      asientoIds: actual.asientos.map(asiento => asiento.asientoId),
-      snacks: actual.dulceria.map(item => ({
+      funcionId: compraActual.funcion
+        ? Number(compraActual.funcion.funcionId)
+        : null,
+      asientoIds: compraActual.asientos.map((asiento) => asiento.asientoId),
+      snacks: compraActual.dulceria.map((item) => ({
         id: item.id,
-        cantidad: item.cantidad
-      }))
+        cantidad: item.cantidad,
+      })),
     };
 
     return firstValueFrom(
-      this.http.post<RespuestaCompra>(
-        'http://localhost:8080/api/compras/registrar',
-        solicitud,
-        { withCredentials: true }
-      )
+      this.http.post<RespuestaCompra>(`${this.apiUrl}/registrar`, solicitud, {
+        withCredentials: true,
+      }),
     );
   }
 
-  confirmarCompra(compraId: number): EntradaConfirmada | null {
-    const actual = this.compra();
-    if (!actual) return null;
+  obtenerMisEntradas(): Promise<EntradaUsuario[]> {
+    return firstValueFrom(
+      this.http.get<EntradaUsuario[]>(`${this.apiUrl}/mias`, {
+        withCredentials: true,
+      }),
+    );
+  }
 
-    const entrada: EntradaConfirmada = {
-      ...actual,
-      codigo: `MC-${compraId}`,
-      confirmadaEn: new Date().toISOString()
-    };
-    const historial = [entrada, ...this.entradas()];
-
-    localStorage.setItem(this.claveHistorial, JSON.stringify(historial));
-    this.entradas.set(historial);
+  finalizarCompra(): CompraActiva | null {
+    const compraFinalizada = this.compra();
     this.limpiar();
-
-    return entrada;
+    return compraFinalizada;
   }
 
   private guardar(compra: CompraActiva): void {
@@ -138,18 +178,13 @@ export class CompraService {
   }
 
   private leerSesion(): CompraActiva | null {
-    const almacenada = sessionStorage.getItem(this.claveSesion);
+    try {
+      const almacenada = sessionStorage.getItem(this.claveSesion);
 
-    return almacenada
-      ? JSON.parse(almacenada) as CompraActiva
-      : null;
-  }
-
-  private leerHistorial(): EntradaConfirmada[] {
-    const almacenado = localStorage.getItem(this.claveHistorial);
-
-    return almacenado
-      ? JSON.parse(almacenado) as EntradaConfirmada[]
-      : [];
+      return almacenada ? (JSON.parse(almacenada) as CompraActiva) : null;
+    } catch {
+      sessionStorage.removeItem(this.claveSesion);
+      return null;
+    }
   }
 }

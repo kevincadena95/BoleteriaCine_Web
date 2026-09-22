@@ -1,25 +1,82 @@
-import { Component, inject } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CompraService } from '../compra/compra.service';
+import {
+  CompraService,
+  EntradaUsuario
+} from '../compra/compra.service';
+import { PeliculaService } from '../cartelera/pelicula.service';
 
 @Component({
   selector: 'app-mis-entradas',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink],
   templateUrl: './mis-entradas.html',
-  styleUrls: ['./mis-entradas.css']
+  styleUrl: './mis-entradas.css'
 })
-export class MisEntradas {
-  compraService = inject(CompraService);
+export class MisEntradas implements OnInit {
+  private readonly compraService = inject(CompraService);
+  private readonly peliculaService = inject(PeliculaService);
 
-  total(entradaIndex: number): number {
-    const entrada = this.compraService.entradas()[entradaIndex];
-    return entrada.asientos.reduce((suma, asiento) => suma + asiento.precio, 0)
-      + entrada.dulceria.reduce((suma, item) => suma + item.precioUnitario * item.cantidad, 0);
+  readonly entradas = signal<EntradaUsuario[]>([]);
+  readonly imagenesPeliculas = signal<Record<string, string>>({});
+  readonly cargando = signal(true);
+  readonly error = signal('');
+
+  async ngOnInit(): Promise<void> {
+    await this.cargarEntradas();
   }
 
-  asientosTexto(entradaIndex: number): string {
-    return this.compraService.entradas()[entradaIndex].asientos.map(asiento => asiento.id).join(', ');
+  async cargarEntradas(): Promise<void> {
+    this.cargando.set(true);
+    this.error.set('');
+
+    try {
+      const entradas = await this.compraService.obtenerMisEntradas();
+
+      this.entradas.set(entradas);
+      await this.cargarImagenesPeliculas();
+    } catch {
+      this.error.set(
+        'No se pudieron cargar tus boletos. Inténtalo nuevamente.'
+      );
+    } finally {
+      this.cargando.set(false);
+    }
+  }
+
+  imagenPelicula(entrada: EntradaUsuario): string | null {
+    const clave = this.normalizarTitulo(entrada.pelicula);
+
+    return this.imagenesPeliculas()[clave] ?? null;
+  }
+
+  asientosTexto(entrada: EntradaUsuario): string {
+    return entrada.asientos.join(', ');
+  }
+
+  private async cargarImagenesPeliculas(): Promise<void> {
+    try {
+      const peliculas = await this.peliculaService.obtenerPeliculas();
+      const imagenes: Record<string, string> = {};
+
+      for (const pelicula of peliculas) {
+        const clave = this.normalizarTitulo(pelicula.titulo);
+        imagenes[clave] = pelicula.imagen;
+      }
+
+      this.imagenesPeliculas.set(imagenes);
+    } catch {
+      // Los boletos se muestran aunque la API de películas no responda.
+      this.imagenesPeliculas.set({});
+    }
+  }
+
+  private normalizarTitulo(titulo: string): string {
+    return titulo
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
   }
 }

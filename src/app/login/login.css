@@ -5,7 +5,7 @@
   place-items: center;
   padding: 32px 20px;
   background:
-    radial-gradient(circle at top, rgba(25, 53, 82, .35), transparent 42%),
+    radial-gradient(circle at top, rgba(25, 53, 82, 0.35), transparent 42%),
     #080d13;
   color: #ffffff;
   box-sizing: border-box;
@@ -16,7 +16,7 @@
   padding: 36px;
   border: 1px solid #2d3947;
   background: #101720;
-  box-shadow: 0 20px 55px rgba(0, 0, 0, .38);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.38);
   box-sizing: border-box;
 }
 
@@ -109,8 +109,20 @@ button:hover:not(:disabled) {
 }
 
 button:disabled {
-  opacity: .55;
+  opacity: 0.55;
   cursor: not-allowed;
+}
+
+.continuar-sin-sesion {
+  margin-top: 6px;
+  color: #b8c1cb;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.continuar-sin-sesion:hover {
+  color: #f2c94c;
 }
 
 @media (max-width: 520px) {
