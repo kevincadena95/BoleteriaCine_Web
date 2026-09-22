@@ -110,7 +110,9 @@ export class AsientosService {
     const clave = 'cine:clienteId';
     let clienteId = sessionStorage.getItem(clave);
     if (!clienteId) {
-      clienteId = crypto.randomUUID();
+      // crypto.randomUUID() solo existe en contextos seguros (https o localhost);
+      // la app corre por http sobre la IP de la red local, así que no está disponible.
+      clienteId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
       sessionStorage.setItem(clave, clienteId);
     }
     return clienteId;
