@@ -87,8 +87,6 @@ export class Confirmacion implements OnInit {
       const compraFinalizada = this.compraService.finalizarCompra();
 
       if (compraFinalizada) {
-        // El backend ya transmite "OCUPADO" por WebSocket a todos los conectados
-        // en cuanto registra la compra (ver CompraService.registrarCompra).
         this.compraMostrada.set(compraFinalizada);
         this.codigoReserva.set(`MC-${respuesta.id}`);
         this.confirmada.set(true);

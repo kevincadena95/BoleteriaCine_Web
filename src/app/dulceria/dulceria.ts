@@ -52,7 +52,6 @@ export class Dulceria {
   private auth = inject(AuthService);
 
   readonly products: Product[] = [
-    // Combos
     {
       id: 1,
       name: "Combo 1",
@@ -86,7 +85,6 @@ export class Dulceria {
       image: "/assets/dulceria/combo-4.png",
     },
 
-    // Bebidas e Individuales
     {
       id: 5,
       name: "Bebida Pequeña",
@@ -120,7 +118,6 @@ export class Dulceria {
       image: "/assets/dulceria/agua-sin-gas.jpg",
     },
 
-    // Dulces
     {
       id: 9,
       name: "Tic Tac Naranja",
@@ -254,7 +251,6 @@ export class Dulceria {
     this.mostrarLoginRequerido.set(false);
   }
 
-  // El navegador muestra su alerta nativa al recargar o cerrar una pestaña.
   @HostListener("window:beforeunload", ["$event"])
   advertirAntesDeCerrar(event: BeforeUnloadEvent): void {
     if (this.cartItems().length === 0) return;

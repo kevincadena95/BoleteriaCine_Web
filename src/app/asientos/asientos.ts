@@ -75,8 +75,6 @@ export class Asientos implements OnInit, OnDestroy {
     this.asientosService.desconectar();
   }
 
-  // El navegador muestra su alerta nativa al recargar o cerrar una pestaña.
-  // El backend debe expirar cualquier bloqueo que no reciba confirmación de compra.
   @HostListener('window:beforeunload', ['$event'])
   advertirAntesDeCerrar(event: BeforeUnloadEvent): void {
     if (!this.puedeContinuar()) return;

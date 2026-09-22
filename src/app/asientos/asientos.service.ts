@@ -42,8 +42,6 @@ export class AsientosService {
     funcionId: string,
     onUpdate: (asiento: { id: string; estado: Asiento['estado'] }) => void
   ): Promise<void> {
-    // SockJS se importa bajo demanda: Vite no debe evaluarlo hasta que realmente se conecte.
-    // SockJS 1.x espera el alias global que Vite no expone por defecto en el navegador.
     (globalThis as typeof globalThis & {
       global?: typeof globalThis;
     }).global ??= globalThis;
@@ -94,9 +92,6 @@ export class AsientosService {
     this.stompClient = null;
   }
 
-  // El backend nunca envía "SELECCIONADO": manda RESERVADO junto con el clienteId
-  // de quien lo tomó. Si coincide con el propio, es mi selección; si no, queda
-  // bloqueado para mí como RESERVADO por otro usuario.
   private traducirEstado(
     estado: Asiento['estado'],
     clienteId: string | null | undefined
@@ -110,8 +105,6 @@ export class AsientosService {
     const clave = 'cine:clienteId';
     let clienteId = sessionStorage.getItem(clave);
     if (!clienteId) {
-      // crypto.randomUUID() solo existe en contextos seguros (https o localhost);
-      // la app corre por http sobre la IP de la red local, así que no está disponible.
       clienteId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
       sessionStorage.setItem(clave, clienteId);
     }

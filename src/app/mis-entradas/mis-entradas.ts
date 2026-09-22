@@ -68,7 +68,6 @@ export class MisEntradas implements OnInit {
 
       this.imagenesPeliculas.set(imagenes);
     } catch {
-      // Los boletos se muestran aunque la API de películas no responda.
       this.imagenesPeliculas.set({});
     }
   }

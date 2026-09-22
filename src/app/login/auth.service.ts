@@ -96,7 +96,6 @@ export class AuthService {
         this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true }),
       );
     } catch {
-      // Se limpia el estado local aunque la sesión ya haya vencido.
     } finally {
       sessionStorage.removeItem("cine:compra-activa");
       localStorage.removeItem("cine:entradas-confirmadas");
