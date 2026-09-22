@@ -196,14 +196,35 @@
 }
 
 .asiento {
+    position: relative;
     width: 100%;
     min-width: 39px;
     height: 44px;
     border: 1px solid transparent;
-    border-radius: 8px 8px 4px 4px;
+    border-radius: 45% 45% 8px 8px / 55% 55% 10px 10px;
     cursor: pointer;
     font-weight: 800;
     transition: transform .18s, border-color .18s, box-shadow .18s;
+}
+
+.asiento::before,
+.asiento::after {
+    content: "";
+    position: absolute;
+    top: 38%;
+    width: 5px;
+    height: 50%;
+    border-radius: 3px;
+    background: currentColor;
+    opacity: .22;
+}
+
+.asiento::before {
+    left: -4px;
+}
+
+.asiento::after {
+    right: -4px;
 }
 
 .asiento.libre {

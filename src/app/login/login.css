@@ -93,11 +93,15 @@ input:focus {
   right: 0;
   bottom: 0;
   width: 42px;
-  display: grid;
-  place-items: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background: transparent;
   color: #8f9aa8;
+  line-height: 0;
   cursor: pointer;
 }
 
