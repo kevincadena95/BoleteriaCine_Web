@@ -1,11 +1,12 @@
 import { Component, OnInit, signal, computed, inject } from "@angular/core";
 import { Router } from "@angular/router";
+import { LucideStar, LucideTicket } from "@lucide/angular";
 import { Pelicula, PeliculaService } from "./pelicula.service";
 
 @Component({
   selector: "app-cartelera",
   standalone: true,
-  imports: [],
+  imports: [LucideStar, LucideTicket],
   templateUrl: "./cartelera.html",
   styleUrl: "./cartelera.css",
 })

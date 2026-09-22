@@ -79,6 +79,32 @@ input:focus {
   border-color: #f2c94c;
 }
 
+.campo-password {
+  position: relative;
+}
+
+.campo-password input {
+  padding-right: 42px;
+}
+
+.alternar-password {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 42px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: #8f9aa8;
+  cursor: pointer;
+}
+
+.alternar-password:hover {
+  color: #f2c94c;
+}
+
 small,
 .mensaje-error {
   margin: 0;

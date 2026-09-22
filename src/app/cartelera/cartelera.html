@@ -53,17 +53,21 @@
             (click)="seleccionarPelicula(pelicula)"
             style="cursor: pointer;">
 
-            <div class="poster">
-              <img [src]="pelicula.imagen" [alt]="pelicula.titulo">
+            <div class="poster-wrap">
+              <div class="poster-glow" [style.background-image]="'url(' + pelicula.imagen + ')'"></div>
+
+              <div class="poster">
+                <img [src]="pelicula.imagen" [alt]="pelicula.titulo">
+              </div>
             </div>
 
             <div class="etiqueta">
               @if (pelicula.estado === 'cartelera') {
-                <span class="preventa">🎟 Pre-venta</span>
+                <span class="preventa"><svg lucideTicket [size]="14"></svg> Pre-venta</span>
               }
 
               @if (pelicula.estado === 'estreno') {
-                <span class="estreno">★ Estreno</span>
+                <span class="estreno"><svg lucideStar [size]="14"></svg> Estreno</span>
               }
 
               @if (pelicula.estado === 'proximamente') {

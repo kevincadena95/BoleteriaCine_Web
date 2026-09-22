@@ -1,5 +1,14 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import {
+  LucideArrowLeft,
+  LucideClock,
+  LucidePlay,
+  LucideStar,
+  LucideTicket,
+  LucideX,
+} from "@lucide/angular";
 import { CineApi, FuncionCine } from "../admin/api.service";
 import { Pelicula, PeliculaService } from "../cartelera/pelicula.service";
 import { AuthService } from "../login/auth.service";
@@ -14,7 +23,16 @@ interface FechaBoleteria {
 @Component({
   selector: "app-boleteria",
   standalone: true,
-  imports: [RouterLink, LoginRequerido],
+  imports: [
+    RouterLink,
+    LoginRequerido,
+    LucideArrowLeft,
+    LucideClock,
+    LucidePlay,
+    LucideStar,
+    LucideTicket,
+    LucideX,
+  ],
   templateUrl: "./boleteria.html",
   styleUrl: "./boleteria.css",
 })
@@ -24,6 +42,7 @@ export class Boleteria implements OnInit {
   private readonly peliculaService = inject(PeliculaService);
   private readonly cineApi = inject(CineApi);
   private readonly auth = inject(AuthService);
+  private readonly sanitizer = inject(DomSanitizer);
 
   readonly pelicula = signal<Pelicula | null>(null);
   readonly cargando = signal(true);
@@ -33,6 +52,20 @@ export class Boleteria implements OnInit {
   readonly fechas = signal<FechaBoleteria[]>([]);
   readonly funciones = signal<FuncionCine[]>([]);
   readonly mostrarLoginRequerido = signal(false);
+  readonly mostrarTrailer = signal(false);
+
+  readonly idTrailer = computed(() =>
+    this.extraerIdYoutube(this.pelicula()?.trailerUrl),
+  );
+
+  readonly urlTrailerSegura = computed<SafeResourceUrl | null>(() => {
+    const id = this.idTrailer();
+    if (!id) return null;
+
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`,
+    );
+  });
 
   async ngOnInit(): Promise<void> {
     try {
@@ -111,6 +144,24 @@ export class Boleteria implements OnInit {
 
   cerrarLoginRequerido(): void {
     this.mostrarLoginRequerido.set(false);
+  }
+
+  reproducirTrailer(): void {
+    if (this.idTrailer()) this.mostrarTrailer.set(true);
+  }
+
+  cerrarTrailer(): void {
+    this.mostrarTrailer.set(false);
+  }
+
+  private extraerIdYoutube(url: string | undefined): string | null {
+    if (!url) return null;
+
+    const match = url.match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
+    );
+
+    return match ? match[1] : null;
   }
 
   private crearFechasDisponibles(): FechaBoleteria[] {

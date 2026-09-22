@@ -28,7 +28,7 @@ interface RespuestaLogin {
 @Injectable({ providedIn: "root" })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = "http://localhost:8080/api/auth";
+  private readonly apiUrl = "http://192.168.137.1:8080/api/auth";
 
   private readonly perfilActual = signal<PerfilUsuario | null>(null);
   private consultaEnCurso: Promise<PerfilUsuario | null> | null = null;

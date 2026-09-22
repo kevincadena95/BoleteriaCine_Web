@@ -1,6 +1,35 @@
 <section class="boleteria">
   @if (cargando()) {
-  <div class="estado">Cargando película...</div>
+  <div class="boleteria-container">
+    <div class="skeleton-line skeleton-regresar"></div>
+
+    <div class="contenido">
+      <div class="informacion-pelicula">
+        <div class="poster-wrap">
+          <div class="poster skeleton-block"></div>
+        </div>
+
+        <div class="skeleton-line skeleton-badge"></div>
+        <div class="skeleton-line skeleton-clasificacion"></div>
+        <div class="skeleton-line skeleton-titulo"></div>
+        <div class="skeleton-line skeleton-duracion"></div>
+      </div>
+
+      <div class="funciones">
+        <div class="skeleton-line skeleton-heading"></div>
+        <div class="skeleton-line skeleton-sub"></div>
+
+        <div class="fecha">
+          @for (i of [1,2,3,4,5,6,7]; track i) {
+          <div class="dia skeleton-block skeleton-dia"></div>
+          }
+        </div>
+
+        <div class="skeleton-block skeleton-funcion"></div>
+        <div class="skeleton-block skeleton-funcion"></div>
+      </div>
+    </div>
+  </div>
   } @if (!cargando() && error()) {
   <div class="estado">No se pudo cargar la película.</div>
   } @if (!cargando() && !error() && pelicula(); as peli) {
@@ -10,17 +39,31 @@
   ></div>
 
   <div class="boleteria-container">
-    <a routerLink="/" class="regresar">← Regresar</a>
+    <a routerLink="/" class="regresar"><svg lucideArrowLeft [size]="16"></svg> Regresar</a>
 
     <div class="contenido">
       <div class="informacion-pelicula">
-        <img class="poster" [src]="peli.imagen" [alt]="peli.titulo" />
+        <div class="poster-wrap">
+          <div class="poster-glow" [style.background-image]="'url(' + peli.imagen + ')'"></div>
+          <img class="poster" [src]="peli.imagen" [alt]="peli.titulo" />
+
+          @if (idTrailer()) {
+          <button
+            type="button"
+            class="reproducir-trailer"
+            (click)="reproducirTrailer()"
+            aria-label="Reproducir trailer"
+          >
+            <svg lucidePlay [size]="24"></svg>
+          </button>
+          }
+        </div>
 
         <div class="etiqueta">
           @if (peli.estado === 'cartelera') {
-          <span class="preventa">🎟 Pre-venta</span>
+          <span class="preventa"><svg lucideTicket [size]="14"></svg> Pre-venta</span>
           } @if (peli.estado === 'estreno') {
-          <span class="estreno">★ Estreno</span>
+          <span class="estreno"><svg lucideStar [size]="14"></svg> Estreno</span>
           } @if (peli.estado === 'proximamente') {
           <span class="proximo">Próximamente</span>
           }
@@ -28,13 +71,7 @@
 
         <p class="clasificacion">{{ peli.clasificacion }}</p>
         <h1>{{ peli.titulo }}</h1>
-        <p class="duracion">◷ {{ peli.duracion }} min</p>
-
-        @if (peli.trailerUrl) {
-        <a class="trailer" [href]="peli.trailerUrl" target="_blank">
-          ▶ Ver trailer
-        </a>
-        }
+        <p class="duracion"><svg lucideClock [size]="15"></svg> {{ peli.duracion }} min</p>
 
         <div class="sinopsis">
           <h3>Sinopsis</h3>
@@ -108,4 +145,26 @@
 
 @if (mostrarLoginRequerido()) {
 <app-login-requerido (cerrar)="cerrarLoginRequerido()"> </app-login-requerido>
+}
+
+@if (mostrarTrailer() && urlTrailerSegura(); as urlSegura) {
+<div class="modal-trailer-backdrop" role="presentation" (click)="cerrarTrailer()">
+  <div class="modal-trailer" (click)="$event.stopPropagation()">
+    <iframe
+      [src]="urlSegura"
+      title="Trailer"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+    ></iframe>
+
+    <button
+      type="button"
+      class="cerrar-trailer"
+      (click)="cerrarTrailer()"
+      aria-label="Cerrar trailer"
+    >
+      <svg lucideX [size]="18"></svg>
+    </button>
+  </div>
+</div>
 }

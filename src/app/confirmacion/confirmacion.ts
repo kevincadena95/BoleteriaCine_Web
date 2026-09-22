@@ -2,13 +2,14 @@ import { CurrencyPipe } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
+import { LucideCheck } from "@lucide/angular";
 import { AsientosService } from "../asientos/asientos.service";
 import { CompraActiva, CompraService } from "../compra/compra.service";
 
 @Component({
   selector: "app-confirmacion",
   standalone: true,
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, LucideCheck],
   templateUrl: "./confirmacion.html",
   styleUrl: "./confirmacion.css",
 })
@@ -86,18 +87,8 @@ export class Confirmacion implements OnInit {
       const compraFinalizada = this.compraService.finalizarCompra();
 
       if (compraFinalizada) {
-        const funcion = compraFinalizada.funcion;
-
-        if (funcion) {
-          for (const asiento of compraFinalizada.asientos) {
-            this.asientosService.enviarAccionAsiento(
-              funcion.funcionId,
-              asiento.id,
-              "OCUPADO",
-            );
-          }
-        }
-
+        // El backend ya transmite "OCUPADO" por WebSocket a todos los conectados
+        // en cuanto registra la compra (ver CompraService.registrarCompra).
         this.compraMostrada.set(compraFinalizada);
         this.codigoReserva.set(`MC-${respuesta.id}`);
         this.confirmada.set(true);

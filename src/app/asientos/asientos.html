@@ -1,9 +1,9 @@
 <main class="cine-container">
     @if (aviso()) {
-    <div class="aviso" role="status">✓ {{ aviso() }}</div>
+    <div class="aviso" role="status"><svg lucideCheck [size]="18"></svg> {{ aviso() }}</div>
     }
 
-    <a class="volver" [routerLink]="['/boleteria', peliculaSlug()]">← Volver a horarios</a>
+    <a class="volver" [routerLink]="['/boleteria', peliculaSlug()]"><svg lucideArrowLeft [size]="16"></svg> Volver a horarios</a>
 
     <section class="detalle-funcion" aria-label="Función seleccionada">
         <span class="eyebrow">TU FUNCIÓN</span>
@@ -17,7 +17,7 @@
     </div>
     } @else {
     <div class="reserva-temporal" [class.oculta]="!puedeContinuar()">
-        <span>⏱ Reserva temporal</span>
+        <span><svg lucideTimer [size]="16"></svg> Reserva temporal</span>
         <strong>{{ tiempoFormateado() }}</strong>
     </div>
 
@@ -29,6 +29,7 @@
     <div class="leyenda" aria-label="Estados de los asientos">
         <div class="item-leyenda"><span class="box libre"></span> Libre</div>
         <div class="item-leyenda"><span class="box seleccionado"></span> Tu selección</div>
+        <div class="item-leyenda"><span class="box reservado"></span> Reservado por otro</div>
         <div class="item-leyenda"><span class="box ocupado"></span> Ocupado</div>
     </div>
 
@@ -40,7 +41,9 @@
                 @for (asiento of fila.asientos; track asiento.id) {
                 <button class="asiento" [class.libre]="asiento.estado === 'LIBRE'"
                     [class.seleccionado]="asiento.estado === 'SELECCIONADO'"
-                    [class.ocupado]="asiento.estado === 'OCUPADO'" [disabled]="asiento.estado === 'OCUPADO'"
+                    [class.reservado]="asiento.estado === 'RESERVADO'"
+                    [class.ocupado]="asiento.estado === 'OCUPADO'"
+                    [disabled]="asiento.estado === 'OCUPADO' || asiento.estado === 'RESERVADO'"
                     (click)="toggleAsiento(asiento)"
                     [attr.aria-label]="'Asiento ' + asiento.id + ', ' + asiento.estado">
                     {{ asiento.id.slice(1) }}
@@ -75,7 +78,7 @@
 @if (mostrarConfirmacion()) {
 <div class="modal-backdrop" role="presentation">
     <section class="modal-salida" role="dialog" aria-modal="true" aria-labelledby="titulo-salida">
-        <span class="modal-icono">⚠</span>
+        <svg class="modal-icono" lucideTriangleAlert [size]="32" color="#f2c94c"></svg>
         <h2 id="titulo-salida">¿Salir de la selección?</h2>
         <p>Tienes {{ seleccionados().length }} asiento{{ seleccionados().length === 1 ? '' : 's' }} reservado{{
             seleccionados().length === 1 ? '' : 's' }} temporalmente. Si sales, se liberarán.</p>
