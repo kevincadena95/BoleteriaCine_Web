@@ -1,0 +1,103 @@
+:host {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+}
+
+.modal-fondo {
+  width: 100%;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.78);
+  box-sizing: border-box;
+}
+
+.modal-login {
+  width: min(480px, 100%);
+  padding: 34px;
+  border: 1px solid #394553;
+  border-top: 4px solid #f2c94c;
+  background: #101720;
+  color: #ffffff;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  box-sizing: border-box;
+}
+
+.modal-icono {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+  border: 1px solid #f2c94c;
+  border-radius: 50%;
+  color: #f2c94c;
+  font-size: 30px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+p {
+  margin: 14px auto 0;
+  color: #b5bec9;
+  line-height: 1.6;
+}
+
+.modal-acciones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.modal-acciones button,
+.modal-acciones a {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 3px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.boton-secundario {
+  border: 1px solid #586473;
+  background: transparent;
+  color: #e5e8ec;
+}
+
+.boton-secundario:hover {
+  border-color: #f2c94c;
+  color: #f2c94c;
+}
+
+.boton-principal {
+  border: 1px solid #f2c94c;
+  background: #f2c94c;
+  color: #111820;
+}
+
+.boton-principal:hover {
+  background: #ffda5d;
+}
+
+@media (max-width: 520px) {
+  .modal-login {
+    padding: 28px 20px;
+  }
+
+  .modal-acciones {
+    grid-template-columns: 1fr;
+  }
+}

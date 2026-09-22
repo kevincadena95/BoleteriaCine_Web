@@ -1,1 +1,52 @@
-<p>perfil works!</p>
+<main class="perfil-page">
+  <section class="perfil-contenido">
+    <header class="perfil-encabezado">
+      <h1>Mi perfil</h1>
+    </header>
+
+    @if (auth.perfil(); as perfil) {
+    <section class="tarjeta-presentacion">
+      <div class="avatar" aria-hidden="true">{{ iniciales() }}</div>
+
+      <h2>{{ perfil.nombre }}</h2>
+      <p>{{ perfil.email }}</p>
+    </section>
+
+    <section class="tarjeta-datos">
+      <h2>Información de la cuenta</h2>
+
+      <dl>
+        <div class="dato">
+          <dt>Nombre</dt>
+          <dd>{{ perfil.nombre }}</dd>
+        </div>
+
+        <div class="dato">
+          <dt>Correo</dt>
+          <dd>{{ perfil.email }}</dd>
+        </div>
+
+        @if (perfil.telefono) {
+        <div class="dato">
+          <dt>Teléfono</dt>
+          <dd>{{ perfil.telefono }}</dd>
+        </div>
+        }
+
+        <div class="dato">
+          <dt>Rol</dt>
+          <dd>{{ rolVisible() }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <div class="acciones-perfil">
+      <a routerLink="/mis-entradas" class="boton-principal"> Historial de Boletos </a>
+
+      <a routerLink="/cartelera" class="boton-secundario">
+        Volver a cartelera
+      </a>
+    </div>
+    }
+  </section>
+</main>

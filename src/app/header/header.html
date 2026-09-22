@@ -1,17 +1,50 @@
 <header class="header">
   <div class="header-container">
     <a routerLink="/cartelera" class="logo">
-      <img src="assets/logo/logo-micine.png" alt="Logo Cine" class="logo-img">
+      <img
+        src="assets/logo/logo-micine.png"
+        alt="Metropoli Cine"
+        class="logo-img"
+      />
     </a>
 
-    <nav class="nav">
-      <a routerLink="/cartelera" routerLinkActive="active">Cartelera</a>
-      <a routerLink="/dulceria" routerLinkActive="active">Dulcería</a>
-      <a routerLink="/mis-entradas" routerLinkActive="active">Mis Boletos</a>
-      <a href="#" class="perfil">
-        <span class="usuario">♙</span>
-        <span>Perfil</span>
+    <nav class="nav" aria-label="Navegación principal">
+      <a routerLink="/cartelera" routerLinkActive="active" class="enlace-nav">
+        Cartelera
       </a>
+
+      <a routerLink="/dulceria" routerLinkActive="active" class="enlace-nav">
+        Dulcería
+      </a>
+
+      @if (auth.autenticado()) {
+
+      @if (auth.esAdmin()) {
+      <a routerLink="/admin" routerLinkActive="active" class="enlace-nav">
+        Administración
+      </a>
+      }
+
+      <div class="sesion">
+        <a
+          routerLink="/perfil"
+          routerLinkActive="cuenta-activa"
+          class="cuenta"
+          aria-label="Abrir mi perfil"
+        >
+          <span class="usuario" aria-hidden="true">♙</span>
+
+          <span class="datos-usuario">
+            <span>{{ auth.usuario() }}</span>
+            <small>{{ auth.rol() }}</small>
+          </span>
+        </a>
+
+        <button type="button" (click)="cerrarSesion()">Salir</button>
+      </div>
+      } @else if (auth.sesionComprobada()) {
+      <a routerLink="/login" class="iniciar-sesion"> Iniciar sesión </a>
+      }
     </nav>
   </div>
 </header>

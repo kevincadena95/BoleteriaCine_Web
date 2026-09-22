@@ -1,63 +1,134 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-import { AsientosService } from '../asientos/asientos.service';
-import { CompraActiva, CompraService } from '../compra/compra.service';
+import { CurrencyPipe } from "@angular/common";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
+import { Router, RouterLink } from "@angular/router";
+import { AsientosService } from "../asientos/asientos.service";
+import { CompraActiva, CompraService } from "../compra/compra.service";
 
 @Component({
-  selector: 'app-confirmacion',
+  selector: "app-confirmacion",
   standalone: true,
   imports: [CurrencyPipe, RouterLink],
-  templateUrl: './confirmacion.html',
-  styleUrls: ['./confirmacion.css']
+  templateUrl: "./confirmacion.html",
+  styleUrl: "./confirmacion.css",
 })
 export class Confirmacion implements OnInit {
-  private router = inject(Router);
-  private asientosService = inject(AsientosService);
-  compraService = inject(CompraService);
-  confirmada = signal(false);
-  compraMostrada = signal<CompraActiva | null>(null);
-  codigoReserva = signal('');
-  asientosTexto = computed(() => this.compraMostrada()?.asientos.map(asiento => asiento.id).join(', ') ?? '');
-  subtotalAsientos = computed(() => this.compraMostrada()?.asientos.reduce((total, asiento) => total + asiento.precio, 0) ?? 0);
-  subtotalDulceria = computed(() => this.compraMostrada()?.dulceria.reduce((total, item) => total + item.precioUnitario * item.cantidad, 0) ?? 0);
-  total = computed(() => this.subtotalAsientos() + this.subtotalDulceria());
+  private readonly router = inject(Router);
+  private readonly asientosService = inject(AsientosService);
+
+  readonly compraService = inject(CompraService);
+  readonly confirmada = signal(false);
+  readonly procesando = signal(false);
+  readonly errorCompra = signal("");
+  readonly compraMostrada = signal<CompraActiva | null>(null);
+  readonly codigoReserva = signal("");
+
+  readonly esSoloDulceria = computed(() => {
+    return this.compraMostrada()?.funcion === null;
+  });
+
+  readonly asientosTexto = computed(() => {
+    return (
+      this.compraMostrada()
+        ?.asientos.map((asiento) => asiento.id)
+        .join(", ") ?? ""
+    );
+  });
+
+  readonly subtotalAsientos = computed(() => {
+    return (
+      this.compraMostrada()?.asientos.reduce(
+        (total, asiento) => total + asiento.precio,
+        0,
+      ) ?? 0
+    );
+  });
+
+  readonly subtotalDulceria = computed(() => {
+    return (
+      this.compraMostrada()?.dulceria.reduce(
+        (total, item) => total + item.precioUnitario * item.cantidad,
+        0,
+      ) ?? 0
+    );
+  });
+
+  readonly total = computed(() => {
+    return this.subtotalAsientos() + this.subtotalDulceria();
+  });
 
   ngOnInit(): void {
     const compra = this.compraService.compra();
+
     if (!compra) {
-      this.router.navigate(['/cartelera']);
+      void this.router.navigate(["/cartelera"]);
       return;
     }
+
     this.compraMostrada.set(compra);
-    this.codigoReserva.set(`MC-${compra.funcion.funcionId.slice(-8).toUpperCase()}`);
+    this.codigoReserva.set(
+      compra.funcion
+        ? `MC-${compra.funcion.funcionId.slice(-8).toUpperCase()}`
+        : "MC-DULCERÍA",
+    );
   }
 
-  confirmarCompra(): void {
+  async confirmarCompra(): Promise<void> {
     const compra = this.compraMostrada();
-    if (!compra || this.confirmada()) return;
 
-    // En producción, el backend debe validar y confirmar la compra de forma atómica.
-    // El modo local marca los asientos como OCUPADO para simular esa confirmación.
-    for (const asiento of compra.asientos) {
-      this.asientosService.enviarAccionAsiento(compra.funcion.funcionId, asiento.id, 'OCUPADO');
-    }
-    const entrada = this.compraService.confirmarCompra();
-    if (entrada) {
-      this.compraMostrada.set(entrada);
-      this.codigoReserva.set(entrada.codigo);
-      this.confirmada.set(true);
+    if (!compra || this.confirmada() || this.procesando()) return;
+
+    this.procesando.set(true);
+    this.errorCompra.set("");
+
+    try {
+      const respuesta = await this.compraService.registrarEnBackend();
+      const compraFinalizada = this.compraService.finalizarCompra();
+
+      if (compraFinalizada) {
+        const funcion = compraFinalizada.funcion;
+
+        if (funcion) {
+          for (const asiento of compraFinalizada.asientos) {
+            this.asientosService.enviarAccionAsiento(
+              funcion.funcionId,
+              asiento.id,
+              "OCUPADO",
+            );
+          }
+        }
+
+        this.compraMostrada.set(compraFinalizada);
+        this.codigoReserva.set(`MC-${respuesta.id}`);
+        this.confirmada.set(true);
+      }
+    } catch (error) {
+      const respuesta = error as HttpErrorResponse;
+
+      this.errorCompra.set(
+        respuesta.error?.error ||
+          respuesta.message ||
+          "No se pudo guardar la compra.",
+      );
+    } finally {
+      this.procesando.set(false);
     }
   }
 
   cancelarCompra(): void {
     const compra = this.compraMostrada();
-    if (compra) {
+
+    if (compra?.funcion) {
       for (const asiento of compra.asientos) {
-        this.asientosService.enviarAccionAsiento(compra.funcion.funcionId, asiento.id, 'LIBRE');
+        this.asientosService.enviarAccionAsiento(
+          compra.funcion.funcionId,
+          asiento.id,
+          "LIBRE",
+        );
       }
     }
+
     this.compraService.limpiar();
-    this.router.navigate(['/cartelera']);
+    void this.router.navigate(["/cartelera"]);
   }
 }

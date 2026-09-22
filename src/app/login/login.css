@@ -1,0 +1,136 @@
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background:
+    radial-gradient(circle at top, rgba(25, 53, 82, 0.35), transparent 42%),
+    #080d13;
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: min(430px, 100%);
+  padding: 36px;
+  border: 1px solid #2d3947;
+  background: #101720;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.38);
+  box-sizing: border-box;
+}
+
+.identidad {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.logo {
+  width: 170px;
+  max-height: 95px;
+  margin-bottom: 8px;
+  object-fit: contain;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #f2c94c;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.descripcion {
+  margin: 10px 0 0;
+  color: #aeb7c2;
+  font-size: 14px;
+}
+
+form {
+  display: grid;
+  gap: 10px;
+}
+
+label {
+  margin-top: 8px;
+  color: #e1e5e9;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 12px 13px;
+  border: 1px solid #465363;
+  border-radius: 3px;
+  outline: none;
+  background: #080d13;
+  color: #ffffff;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #f2c94c;
+}
+
+small,
+.mensaje-error {
+  margin: 0;
+  color: #ff9292;
+  font-size: 13px;
+}
+
+.mensaje-error {
+  padding: 10px 12px;
+  border: 1px solid #7f4141;
+  background: #241416;
+}
+
+button {
+  margin-top: 14px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 3px;
+  background: #f2c94c;
+  color: #111820;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: #ffd95d;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.continuar-sin-sesion {
+  margin-top: 6px;
+  color: #b8c1cb;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.continuar-sin-sesion:hover {
+  color: #f2c94c;
+}
+
+@media (max-width: 520px) {
+  .login-card {
+    padding: 28px 22px;
+  }
+
+  h1 {
+    font-size: 25px;
+  }
+}

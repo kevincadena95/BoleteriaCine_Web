@@ -1,0 +1,25 @@
+<div class="modal-fondo" role="presentation">
+  <section
+    class="modal-login"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titulo-login-requerido"
+  >
+    <span class="modal-icono" aria-hidden="true">♙</span>
+
+    <h2 id="titulo-login-requerido">Inicia sesión para comprar</h2>
+
+    <p>
+      Necesitas iniciar sesión para continuar con esta compra. Puedes cerrar
+      este mensaje y seguir navegando por el sitio.
+    </p>
+
+    <div class="modal-acciones">
+      <button type="button" class="boton-secundario" (click)="cerrar.emit()">
+        Continuar sin comprar
+      </button>
+
+      <a routerLink="/login" class="boton-principal"> Iniciar Sesión </a>
+    </div>
+  </section>
+</div>

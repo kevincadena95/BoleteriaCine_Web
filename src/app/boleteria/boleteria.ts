@@ -1,127 +1,45 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink, Router } from '@angular/router';
-import { Pelicula, PeliculaService } from '../cartelera/pelicula.service';
+import { Component, inject, OnInit, signal } from "@angular/core";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { CineApi, FuncionCine } from "../admin/api.service";
+import { Pelicula, PeliculaService } from "../cartelera/pelicula.service";
+import { AuthService } from "../login/auth.service";
+import { LoginRequerido } from "../login-requerido/login-requerido";
+
+interface FechaBoleteria {
+  valor: string;
+  dia: string;
+  numero: string;
+}
 
 @Component({
-  selector: 'app-boleteria',
+  selector: "app-boleteria",
   standalone: true,
-  imports: [RouterLink],
-  templateUrl: './boleteria.html',
-  styleUrl: './boleteria.css'
+  imports: [RouterLink, LoginRequerido],
+  templateUrl: "./boleteria.html",
+  styleUrl: "./boleteria.css",
 })
 export class Boleteria implements OnInit {
-  pelicula = signal<Pelicula | null>(null);
-  cargando = signal(true);
-  error = signal(false);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly peliculaService = inject(PeliculaService);
+  private readonly cineApi = inject(CineApi);
+  private readonly auth = inject(AuthService);
 
-  fechaSeleccionada = signal('17');
+  readonly pelicula = signal<Pelicula | null>(null);
+  readonly cargando = signal(true);
+  readonly error = signal(false);
+  readonly errorFunciones = signal(false);
+  readonly fechaSeleccionada = signal("");
+  readonly fechas = signal<FechaBoleteria[]>([]);
+  readonly funciones = signal<FuncionCine[]>([]);
+  readonly mostrarLoginRequerido = signal(false);
 
-  fechas = [
-    { dia: 'Jue.', numero: '17' },
-    { dia: 'Vie.', numero: '18' },
-    { dia: 'Sáb.', numero: '19' },
-    { dia: 'Dom.', numero: '20' },
-    { dia: 'Lun.', numero: '21' },
-    { dia: 'Mar.', numero: '22' },
-    { dia: 'Mié.', numero: '23' }
-  ];
-
-  funcionesPorFecha: Record<string, any[]> = {
-    '17': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['13:00', '14:30', '15:15', '16:45', '17:30', '19:00']
-      },
-      {
-        formato: '4D-Esp',
-        sala: 'SALA 4D',
-        horarios: ['13:45', '16:00', '18:15', '20:25']
-      }
-    ],
-
-    '18': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['12:00', '14:00', '16:00', '18:00', '20:00']
-      },
-      {
-        formato: '3D-Esp',
-        sala: 'SALA 3D',
-        horarios: ['15:30', '18:30', '21:30']
-      }
-    ],
-
-    '19': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['11:30', '13:45', '16:15', '19:00', '21:30']
-      }
-    ],
-
-    '20': [
-      {
-        formato: '4D-Esp',
-        sala: 'SALA 4D',
-        horarios: ['13:00', '15:30', '18:00', '20:30']
-      }
-    ],
-
-    '21': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['14:00', '16:30', '19:00', '21:15']
-      }
-    ],
-
-    '22': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['15:00', '17:30', '20:00']
-      },
-      {
-        formato: '4D-Esp',
-        sala: 'SALA 4D',
-        horarios: ['16:00', '19:00']
-      }
-    ],
-
-    '23': [
-      {
-        formato: '2D-Esp',
-        sala: 'SALA NORMAL',
-        horarios: ['13:30', '16:00', '18:30', '21:00']
-      }
-    ]
-  };
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private peliculaService: PeliculaService
-  ) { }
-
-  ngOnInit(): void {
-    this.cargarPelicula();
-  }
-
-  async cargarPelicula(): Promise<void> {
-    this.cargando.set(true);
-    this.error.set(false);
-
+  async ngOnInit(): Promise<void> {
     try {
-      const slug = this.route.snapshot.paramMap.get('slug');
-
-      if (!slug) {
-        this.error.set(true);
-        return;
-      }
-
-      const pelicula = await this.peliculaService.obtenerPeliculaPorSlug(slug);
+      const slug = this.route.snapshot.paramMap.get("slug");
+      const pelicula = slug
+        ? await this.peliculaService.obtenerPeliculaPorSlug(slug)
+        : undefined;
 
       if (!pelicula) {
         this.error.set(true);
@@ -129,38 +47,94 @@ export class Boleteria implements OnInit {
       }
 
       this.pelicula.set(pelicula);
-    } catch (error) {
-      console.error('Error al cargar película:', error);
+
+      if (pelicula.estado !== "proximamente") {
+        const fechas = this.crearFechasDisponibles();
+
+        this.fechas.set(fechas);
+        this.fechaSeleccionada.set(fechas[0].valor);
+
+        await this.cambiarFecha(fechas[0].valor);
+      }
+    } catch {
       this.error.set(true);
     } finally {
       this.cargando.set(false);
     }
   }
 
-  cambiarFecha(fecha: string): void {
+  async cambiarFecha(fecha: string): Promise<void> {
     this.fechaSeleccionada.set(fecha);
-  }
+    this.funciones.set([]);
+    this.errorFunciones.set(false);
 
-  get funciones(): any[] {
-    return this.funcionesPorFecha[this.fechaSeleccionada()] || [];
-  }
+    const pelicula = this.pelicula();
+    if (!pelicula) return;
 
-  seleccionarFuncion(funcion: any, hora: string): void {
-    const peli = this.pelicula();
-    if (!peli) return;
+    try {
+      const funciones = await this.cineApi.funciones(pelicula.id);
 
-    // Generar un id ficticio para la función basado en la película, fecha y hora
-    const funcionId = `F${peli.id}-${this.fechaSeleccionada()}-${hora.replace(':', '')}`;
+      if (this.fechaSeleccionada() === fecha) {
+        const funcionesDelDia = funciones
+          .filter((funcion) => funcion.fecha === fecha)
+          .sort((a, b) => a.hora.localeCompare(b.hora));
 
-    this.router.navigate(['/asientos', funcionId], {
-      queryParams: {
-        slug: peli.slug,
-        pelicula: peli.titulo,
-        fecha: `2026-10-${this.fechaSeleccionada()}`,
-        formato: funcion.formato,
-        sala: funcion.sala,
-        hora: hora
+        this.funciones.set(funcionesDelDia);
       }
+    } catch {
+      this.errorFunciones.set(true);
+    }
+  }
+
+  async seleccionarFuncion(funcion: FuncionCine): Promise<void> {
+    const perfil = await this.auth.obtenerPerfil();
+
+    if (!perfil) {
+      this.mostrarLoginRequerido.set(true);
+      return;
+    }
+
+    const pelicula = this.pelicula();
+    if (!pelicula) return;
+
+    void this.router.navigate(["/asientos", funcion.id], {
+      queryParams: {
+        slug: pelicula.slug,
+        pelicula: pelicula.titulo,
+        fecha: funcion.fecha,
+        formato: `${funcion.formato} · ${funcion.idioma}`,
+        sala: funcion.sala.nombre,
+        hora: funcion.hora.slice(0, 5),
+      },
     });
+  }
+
+  cerrarLoginRequerido(): void {
+    this.mostrarLoginRequerido.set(false);
+  }
+
+  private crearFechasDisponibles(): FechaBoleteria[] {
+    return Array.from({ length: 7 }, (_, indice) => {
+      const fecha = new Date();
+
+      fecha.setHours(12, 0, 0, 0);
+      fecha.setDate(fecha.getDate() + indice);
+
+      return {
+        valor: this.formatearFecha(fecha),
+        dia: new Intl.DateTimeFormat("es-EC", { weekday: "short" }).format(
+          fecha,
+        ),
+        numero: String(fecha.getDate()),
+      };
+    });
+  }
+
+  private formatearFecha(fecha: Date): string {
+    const anio = fecha.getFullYear();
+    const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+    const dia = String(fecha.getDate()).padStart(2, "0");
+
+    return `${anio}-${mes}-${dia}`;
   }
 }

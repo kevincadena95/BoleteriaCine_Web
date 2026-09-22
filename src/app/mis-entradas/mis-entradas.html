@@ -1,26 +1,87 @@
 <main class="entradas-page">
   <section class="entradas-contenido">
-    <p class="eyebrow">TU HISTORIAL</p>
-    <h1>Mis entradas</h1>
-    <p class="intro">Aquí aparecerán tus funciones confirmadas. ESTO SE DEBE CONECTAR DESPUES CON EL PERFIL Y CEUNTA DE USUSARIO</p>
+    <p class="eyebrow">HISTORIAL</p>
+    <h1>Mis Boletos</h1>
 
-    @for (entrada of compraService.entradas(); track entrada.codigo; let indice = $index) {
-    <article class="entrada">
-      <div class="entrada-codigo"><span>ENTRADA CONFIRMADA</span><strong>{{ entrada.codigo }}</strong></div>
-      <div class="entrada-info">
-        <h2>{{ entrada.funcion.pelicula }}</h2>
-        <p>{{ entrada.funcion.fecha }} · {{ entrada.funcion.hora }} · {{ entrada.funcion.formato }}</p>
-        <p>{{ entrada.funcion.sala }} · Asientos: {{ asientosTexto(indice) }}</p>
-        <p>{{ entrada.asientos.length }} asiento{{ entrada.asientos.length === 1 ? '' : 's' }} · Total: {{ total(indice) | currency:'USD' }}</p>
+    @if (cargando()) {
+      <div class="estado-lista">
+        Cargando tus boletos...
       </div>
-    </article>
-    } @empty {
-    <div class="sin-entradas">
-      <span>🎬</span>
-      <h2>Aún no tienes entradas confirmadas</h2>
-      <p>Cuando confirmes una compra, verás aquí todos los datos de tu función.</p>
-      <a routerLink="/cartelera">Ver cartelera</a>
-    </div>
+    } @else if (error()) {
+      <div class="estado-lista estado-error" role="alert">
+        <p>{{ error() }}</p>
+
+        <button type="button" (click)="cargarEntradas()">
+          Reintentar
+        </button>
+      </div>
+    } @else {
+      @for (entrada of entradas(); track entrada.id) {
+        <article class="entrada">
+          <div class="entrada-codigo">
+            <span>ENTRADA CONFIRMADA</span>
+            <strong>{{ entrada.codigo }}</strong>
+
+            @if (imagenPelicula(entrada); as imagen) {
+              <img
+                class="portada-boleto"
+                [src]="imagen"
+                [alt]="'Portada de ' + entrada.pelicula">
+            } @else {
+              <div class="portada-vacia" aria-hidden="true">
+                🎬
+              </div>
+            }
+          </div>
+
+          <div class="entrada-info">
+            <h2>{{ entrada.pelicula }}</h2>
+
+            <p>
+              {{ entrada.fechaFuncion }} ·
+              {{ entrada.hora.slice(0, 5) }} ·
+              {{ entrada.formato }} ·
+              {{ entrada.idioma }}
+            </p>
+
+            <p>
+              {{ entrada.sala }} ·
+              Asientos: {{ asientosTexto(entrada) }}
+            </p>
+
+            <p>
+              {{ entrada.asientos.length }}
+              asiento{{ entrada.asientos.length === 1 ? '' : 's' }} ·
+              Total: {{ entrada.total | currency:'USD' }}
+            </p>
+
+            @if (entrada.snacks.length > 0) {
+              <p class="snacks-resumen">
+                Dulcería:
+
+                @for (snack of entrada.snacks; track snack.nombre) {
+                  <span>
+                    {{ snack.cantidad }} × {{ snack.nombre }}
+                  </span>
+                }
+              </p>
+            }
+          </div>
+        </article>
+      } @empty {
+        <div class="sin-entradas">
+          <span aria-hidden="true">🎬</span>
+          <h2>Aún no tienes entradas confirmadas</h2>
+
+          <p>
+            Cuando realices una compra, tus boletos aparecerán aquí.
+          </p>
+
+          <a routerLink="/cartelera">
+            Ver cartelera
+          </a>
+        </div>
+      }
     }
   </section>
 </main>

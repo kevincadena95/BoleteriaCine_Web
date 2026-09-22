@@ -1,25 +1,41 @@
-import { Component, OnInit, signal, computed, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { Pelicula, PeliculaService } from './pelicula.service';
-import { RouterLink } from '@angular/router';
+import { Component, OnInit, signal, computed, inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { Pelicula, PeliculaService } from "./pelicula.service";
 
 @Component({
-  selector: 'app-cartelera',
+  selector: "app-cartelera",
   standalone: true,
-  imports: [RouterLink],
-  templateUrl: './cartelera.html',
-  styleUrl: './cartelera.css'
+  imports: [],
+  templateUrl: "./cartelera.html",
+  styleUrl: "./cartelera.css",
 })
 export class Cartelera implements OnInit {
   private peliculaService = inject(PeliculaService);
   private router = inject(Router);
 
   peliculas = signal<Pelicula[]>([]);
-  categoriaActual = signal('cartelera');
+  categoriaActual = signal("cartelera");
   cargando = signal(true);
   error = signal(false);
 
   peliculasFiltradas = computed(() => {
+    if (this.categoriaActual() === "cartelera") {
+      return this.peliculas()
+        .filter(
+          pelicula =>
+            pelicula.estado === "cartelera" ||
+            pelicula.estado === "estreno"
+        )
+        .sort((a, b) => {
+          const orden: Record<string, number> = {
+            cartelera: 1,
+            estreno: 2
+          };
+
+          return orden[a.estado] - orden[b.estado];
+        });
+    }
+
     return this.peliculas().filter(
       pelicula => pelicula.estado === this.categoriaActual()
     );
@@ -30,7 +46,7 @@ export class Cartelera implements OnInit {
   }
 
   seleccionarPelicula(pelicula: Pelicula): void {
-    this.router.navigate(['/boleteria', pelicula.slug]);
+    this.router.navigate(["/boleteria", pelicula.slug]);
   }
 
   async cargarPeliculas(): Promise<void> {
@@ -41,7 +57,7 @@ export class Cartelera implements OnInit {
       const data = await this.peliculaService.obtenerPeliculas();
       this.peliculas.set(data);
     } catch (error) {
-      console.error('Error al cargar películas:', error);
+      console.error("Error al cargar películas:", error);
       this.error.set(true);
     } finally {
       this.cargando.set(false);
@@ -51,6 +67,4 @@ export class Cartelera implements OnInit {
   cambiarCategoria(categoria: string): void {
     this.categoriaActual.set(categoria);
   }
-
- 
 }
