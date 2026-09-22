@@ -105,7 +105,7 @@ input:focus {
   cursor: pointer;
 }
 
-.alternar-password:hover {
+.campo-password .alternar-password:hover {
   background: transparent;
   color: #f2c94c;
 }
