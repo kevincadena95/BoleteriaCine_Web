@@ -106,6 +106,7 @@ input:focus {
 }
 
 .alternar-password:hover {
+  background: transparent;
   color: #f2c94c;
 }
 

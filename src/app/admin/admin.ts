@@ -2,6 +2,7 @@ import { DecimalPipe } from "@angular/common";
 import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
+import { LucideSearch, LucideX } from "@lucide/angular";
 import { Pelicula, PeliculaService } from "../cartelera/pelicula.service";
 import { AuthService } from "../login/auth.service";
 import {
@@ -15,7 +16,7 @@ import {
 @Component({
   selector: "app-admin",
   standalone: true,
-  imports: [ReactiveFormsModule, DecimalPipe],
+  imports: [ReactiveFormsModule, DecimalPipe, LucideSearch, LucideX],
   templateUrl: "./admin.html",
   styleUrl: "./admin.css",
 })
@@ -36,6 +37,9 @@ export class Admin implements OnInit {
   readonly accesoVerificado = signal(false);
   readonly salaEditando = signal<number | null>(null);
   readonly funcionEditando = signal<number | null>(null);
+  readonly peliculaSeleccionada = signal<Pelicula | null>(null);
+  readonly busquedaPelicula = signal("");
+  readonly mostrarResultadosPelicula = signal(false);
 
   readonly peliculasDisponibles = computed(() => {
     const funcionEditandoId = this.funcionEditando();
@@ -49,6 +53,15 @@ export class Admin implements OnInit {
         pelicula.id === peliculaEditadaId
       );
     });
+  });
+
+  readonly peliculasFiltradas = computed(() => {
+    const consulta = this.busquedaPelicula().trim().toLowerCase();
+    if (!consulta) return [];
+
+    return this.peliculasDisponibles()
+      .filter((pelicula) => pelicula.titulo.toLowerCase().includes(consulta))
+      .slice(0, 6);
   });
 
   readonly hoy = new Date().toLocaleDateString("en-CA");
@@ -214,8 +227,29 @@ export class Admin implements OnInit {
     }
   }
 
+  actualizarBusquedaPelicula(valor: string): void {
+    this.busquedaPelicula.set(valor);
+    this.mostrarResultadosPelicula.set(true);
+  }
+
+  elegirPelicula(pelicula: Pelicula): void {
+    this.peliculaSeleccionada.set(pelicula);
+    this.funcionForm.controls.peliculaId.setValue(pelicula.id);
+    this.busquedaPelicula.set("");
+    this.mostrarResultadosPelicula.set(false);
+  }
+
+  limpiarPelicula(): void {
+    this.peliculaSeleccionada.set(null);
+    this.funcionForm.controls.peliculaId.setValue(0);
+    this.busquedaPelicula.set("");
+  }
+
   editarFuncion(funcion: FuncionCine): void {
     this.funcionEditando.set(funcion.id);
+    this.peliculaSeleccionada.set(
+      this.peliculas().find((pelicula) => pelicula.id === funcion.peliculaId) ?? null,
+    );
     this.funcionForm.setValue({
       peliculaId: funcion.peliculaId,
       salaId: funcion.sala.id,
@@ -229,6 +263,7 @@ export class Admin implements OnInit {
 
   cancelarEdicionFuncion(): void {
     this.funcionEditando.set(null);
+    this.limpiarPelicula();
     this.funcionForm.reset({
       peliculaId: 0,
       salaId: 0,

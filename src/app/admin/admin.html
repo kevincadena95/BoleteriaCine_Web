@@ -124,18 +124,57 @@
 
         <form [formGroup]="funcionForm" (ngSubmit)="guardarFuncion()">
           <label for="pelicula">Película</label>
-          <select id="pelicula" formControlName="peliculaId">
-            <option [ngValue]="0">Selecciona una película</option>
+          <input type="hidden" formControlName="peliculaId" />
 
-            @for (pelicula of peliculasDisponibles(); track pelicula.id) {
-            <option [ngValue]="pelicula.id">
-              {{ pelicula.titulo }} ({{ pelicula.duracion }} min)
-            </option>
+          @if (peliculaSeleccionada(); as pelicula) {
+          <div class="pelicula-elegida">
+            <span>{{ pelicula.titulo }} ({{ pelicula.duracion }} min)</span>
+            <button
+              type="button"
+              class="quitar-pelicula"
+              (click)="limpiarPelicula()"
+              aria-label="Quitar película seleccionada"
+            >
+              <svg lucideX [size]="16"></svg>
+            </button>
+          </div>
+          } @else {
+          <div class="buscador-pelicula">
+            <svg lucideSearch [size]="16"></svg>
+            <input
+              id="pelicula"
+              type="text"
+              #buscadorPelicula
+              [value]="busquedaPelicula()"
+              (input)="actualizarBusquedaPelicula(buscadorPelicula.value)"
+              (focus)="mostrarResultadosPelicula.set(true)"
+              placeholder="Buscar película por título..."
+              autocomplete="off"
+            />
+          </div>
+
+          @if (mostrarResultadosPelicula() && busquedaPelicula().length > 0) {
+          <div class="resultados-pelicula">
+            @if (peliculasFiltradas().length === 0) {
+            <p class="sin-resultados">Sin resultados en cartelera o estreno.</p>
+            } @else {
+            @for (pelicula of peliculasFiltradas(); track pelicula.id) {
+            <button
+              type="button"
+              class="resultado-item"
+              (click)="elegirPelicula(pelicula)"
+            >
+              <span>{{ pelicula.titulo }}</span>
+              <small>{{ pelicula.duracion }} min</small>
+            </button>
             }
-          </select>
+            }
+          </div>
+          }
 
           @if (peliculasDisponibles().length === 0) {
           <small> No existen películas en estado Estreno o Cartelera. </small>
+          }
           }
 
           <label for="sala">Sala</label>
