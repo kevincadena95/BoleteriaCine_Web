@@ -139,6 +139,40 @@
   color: #f2c94c;
 }
 
+.btn-factura {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  margin-top: 14px;
+  padding: 0.65rem 1.1rem;
+  border: 1px solid #f2c94c;
+  border-radius: 7px;
+  background: transparent;
+  color: #f2c94c;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-factura:hover:not(:disabled) {
+  background: #f2c94c;
+  color: #171100;
+  transform: translateY(-2px);
+}
+
+.btn-factura:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.factura-error {
+  margin-top: 6px;
+  color: #ef6b72;
+  font-size: 0.8rem;
+}
+
 .sin-entradas {
   margin-top: 2rem;
   padding: 3rem 1rem;
@@ -188,5 +222,9 @@
 
   .snacks-resumen {
     justify-content: center;
+  }
+
+  .btn-factura {
+    align-self: center;
   }
 }
