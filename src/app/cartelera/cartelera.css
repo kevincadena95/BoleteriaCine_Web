@@ -33,15 +33,22 @@
 }
 
 .titulo-luz {
-  background-image: linear-gradient(100deg, #f2c94c 45%, #fff6da 50%, #f2c94c 55%);
-  background-size: 280% 100%;
-  background-position: 200% 0;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation:
-    aparecer .7s ease-out .15s both,
-    barrido-luz 2.4s ease-in-out .9s 1;
+  color: #f2c94c;
+  animation: aparecer .7s ease-out .15s both;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .titulo-luz {
+    background-image: linear-gradient(100deg, #f2c94c 45%, #fff6da 50%, #f2c94c 55%);
+    background-size: 280% 100%;
+    background-position: 200% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation:
+      aparecer .7s ease-out .15s both,
+      barrido-luz 2.4s ease-in-out .9s 1;
+  }
 }
 
 @keyframes aparecer {
