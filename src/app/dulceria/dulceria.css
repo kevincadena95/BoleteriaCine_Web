@@ -627,7 +627,9 @@
 }
 
 .btn-secundario,
-.btn-peligro {
+.btn-peligro,
+.btn-terciario,
+.btn-confirmar-modal {
     border: 0;
     border-radius: var(--radius-sm);
     padding: .8rem 1rem;
@@ -643,4 +645,15 @@
 .btn-peligro {
     color: white;
     background: #b83d45;
+}
+
+.btn-terciario {
+    color: var(--accent);
+    background: transparent;
+    border: 1px solid var(--accent);
+}
+
+.btn-confirmar-modal {
+    color: #101a26;
+    background: var(--accent);
 }
