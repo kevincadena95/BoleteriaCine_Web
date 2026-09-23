@@ -289,6 +289,8 @@
 
 .cerrar-trailer:hover {
     background: rgba(239, 107, 114, .85);
+}
+
 .trailer {
     display: inline-flex;
     align-items: center;
@@ -408,7 +410,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    object-position: center;
+    object-position: center bottom;
     filter: drop-shadow(0 35px 45px rgba(0, 0, 0, .72)) drop-shadow(0 0 30px rgba(242, 201, 76, .09));
     user-select: none;
     -webkit-user-drag: none;
@@ -782,6 +784,8 @@
     .poster-wrap,
     .poster {
         width: 210px;
+    }
+
     .personaje-parallax {
         height: 620px;
     }
@@ -801,6 +805,8 @@
     .poster-wrap,
     .poster {
         width: 210px;
+    }
+
     .informacion-pelicula {
         max-width: 100%;
     }
