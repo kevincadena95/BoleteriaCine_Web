@@ -5,33 +5,69 @@
     background: #080d13;
     color: #fff;
     overflow: hidden;
+    perspective: 1400px;
 }
 
 .fondo {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 500px;
+    position: fixed;
+    top: -50px;
+    left: -50px;
+    width: calc(100% + 100px);
+    height: 620px;
     background-size: cover;
     background-position: center 25%;
-    filter: blur(22px);
-    opacity: .13;
-    transform: scale(1.1);
+    filter: blur(24px);
+    opacity: .15;
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform;
+    transition: transform .25s cubic-bezier(.2, .8, .2, 1);
 }
 
 .fondo::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom,
-            rgba(8, 13, 19, .15),
-            #080d13 95%);
+    background: linear-gradient(to bottom, rgba(8, 13, 19, .1), #080d13 95%);
+}
+
+.niebla {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(circle at 18% 28%, rgba(242, 201, 76, .08), transparent 28%), radial-gradient(circle at 82% 20%, rgba(255, 255, 255, .05), transparent 25%), radial-gradient(circle at 65% 65%, rgba(242, 201, 76, .035), transparent 30%), linear-gradient(to bottom, transparent 30%, #080d13 92%);
+    opacity: .95;
+}
+
+.luz {
+    position: fixed;
+    top: -80px;
+    left: 50%;
+    width: 750px;
+    height: 750px;
+    transform: translateX(-50%);
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(242, 201, 76, .1), rgba(242, 201, 76, .025) 35%, transparent 68%);
+    filter: blur(38px);
+    animation: luzMovimiento 8s ease-in-out infinite alternate;
+}
+
+.particulas {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: .32;
+    background-image: radial-gradient(circle at 15% 25%, rgba(255, 255, 255, .3) 0 1px, transparent 2px), radial-gradient(circle at 70% 20%, rgba(242, 201, 76, .25) 0 1px, transparent 2px), radial-gradient(circle at 35% 70%, rgba(255, 255, 255, .2) 0 1px, transparent 2px), radial-gradient(circle at 85% 65%, rgba(242, 201, 76, .18) 0 1px, transparent 2px);
+    background-size: 260px 260px, 340px 340px, 300px 300px, 420px 420px;
+    animation: particulasMovimiento 18s linear infinite;
 }
 
 .boleteria-container {
     position: relative;
-    z-index: 1;
+    z-index: 5;
     width: calc(100% - 80px);
     max-width: 1380px;
     margin: 0 auto;
@@ -47,22 +83,28 @@
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
-    transition: .2s ease;
+    transition: .25s ease;
 }
 
 .regresar:hover {
     color: #f2c94c;
+    transform: translateX(-4px);
 }
 
-.contenido {
+.hero-pelicula {
     display: grid;
-    grid-template-columns: 350px 1fr;
-    gap: 75px;
-    align-items: start;
+    grid-template-columns: minmax(320px, 1fr) minmax(420px, 1fr);
+    gap: 30px;
+    align-items: center;
+    min-height: 700px;
+    transform-style: preserve-3d;
 }
 
 .informacion-pelicula {
     min-width: 0;
+    max-width: 500px;
+    position: relative;
+    z-index: 6;
 }
 
 .poster-wrap {
@@ -104,7 +146,13 @@
     border: 1px solid #303945;
     border-radius: 10px;
     background: #101720;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, .35);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, .45), 0 0 35px rgba(242, 201, 76, .03);
+    transition: transform .4s ease, box-shadow .4s ease;
+}
+
+.poster:hover {
+    transform: translateY(-7px) rotateY(-2deg) scale(1.02);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, .55), 0 0 35px rgba(242, 201, 76, .06);
 }
 
 .reproducir-trailer {
@@ -179,6 +227,9 @@
     font-size: 28px;
     font-weight: 700;
     line-height: 1.2;
+    transition: transform .2s ease-out;
+    will-change: transform;
+    text-shadow: 0 8px 30px rgba(0, 0, 0, .35);
 }
 
 .duracion {
@@ -238,6 +289,26 @@
 
 .cerrar-trailer:hover {
     background: rgba(239, 107, 114, .85);
+.trailer {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border: 1px solid #3a424d;
+    border-radius: 7px;
+    background: #111821;
+    color: #f2c94c;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: .25s ease;
+}
+
+.trailer:hover {
+    border-color: #f2c94c;
+    background: #161e28;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(242, 201, 76, .1);
 }
 
 .sinopsis {
@@ -276,6 +347,12 @@
     background: #101720;
     color: #b8bec6;
     font-size: 12px;
+    transition: .2s ease;
+}
+
+.generos span:hover {
+    border-color: #f2c94c;
+    color: #f2c94c;
 }
 
 .datos p {
@@ -284,8 +361,67 @@
     font-size: 13px;
 }
 
+.personaje-parallax {
+    width: 100%;
+    height: 700px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 4;
+    pointer-events: none;
+    will-change: transform;
+    transform-style: preserve-3d;
+    transition: transform .22s cubic-bezier(.16, 1, .3, 1);
+}
+
+.personaje-parallax::before {
+    content: "";
+    position: absolute;
+    width: 65%;
+    height: 65%;
+    top: 18%;
+    left: 18%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(242, 201, 76, .09), transparent 68%);
+    filter: blur(45px);
+    z-index: -1;
+    transform: translateZ(-80px);
+    animation: personajeLuz 5s ease-in-out infinite alternate;
+}
+
+.personaje-parallax::after {
+    content: "";
+    position: absolute;
+    bottom: 7%;
+    left: 20%;
+    width: 60%;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, .6);
+    filter: blur(28px);
+    transform: translateZ(-50px);
+    opacity: .7;
+}
+
+.personaje-parallax img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    filter: drop-shadow(0 35px 45px rgba(0, 0, 0, .72)) drop-shadow(0 0 30px rgba(242, 201, 76, .09));
+    user-select: none;
+    -webkit-user-drag: none;
+    transform: translateZ(55px);
+    transform-style: preserve-3d;
+    animation: personajeEntrada 1.6s cubic-bezier(.16, 1, .3, 1) both, personajeFlotando 5s ease-in-out 1.6s infinite;
+}
+
 .funciones {
-    min-width: 0;
+    position: relative;
+    z-index: 6;
+    width: 100%;
+    margin-top: 30px;
 }
 
 .funciones-header {
@@ -327,7 +463,7 @@
     background: #101720;
     color: #b8bec6;
     cursor: pointer;
-    transition: .2s ease;
+    transition: .25s ease;
 }
 
 .dia span {
@@ -344,13 +480,15 @@
 
 .dia:hover {
     border-color: #f2c94c;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(242, 201, 76, .08);
 }
 
 .dia.activo {
     border-color: #f2c94c;
     background: #f2c94c;
     color: #111;
+    box-shadow: 0 8px 25px rgba(242, 201, 76, .15);
 }
 
 .dia.activo strong {
@@ -363,8 +501,16 @@
     padding: 24px 25px;
     border: 1px solid #29323d;
     border-radius: 10px;
-    background: #101720;
+    background: rgba(16, 23, 32, .94);
     overflow: hidden;
+    backdrop-filter: blur(8px);
+    transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.funcion:hover {
+    transform: translateY(-4px);
+    border-color: #394451;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .25);
 }
 
 .funcion::before {
@@ -413,7 +559,8 @@
 .horarios button:hover {
     border-color: #f2c94c;
     color: #f2c94c;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(242, 201, 76, .08);
 }
 
 .sin-funciones {
@@ -423,7 +570,7 @@
     justify-content: center;
     border: 1px dashed #303945;
     border-radius: 10px;
-    background: #101720;
+    background: rgba(16, 23, 32, .94);
     color: #9299a3;
     font-size: 15px;
 }
@@ -520,8 +667,9 @@
     padding: 40px;
     border: 1px solid #29323d;
     border-radius: 12px;
-    background: #101720;
+    background: rgba(16, 23, 32, .94);
     text-align: center;
+    backdrop-filter: blur(8px);
 }
 
 .proximamente-contenido span {
@@ -553,39 +701,136 @@
     font-size: 16px;
 }
 
-@media (max-width: 1100px) {
+@keyframes personajeEntrada {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 100px, -80px) scale(.78) rotateY(-8deg);
+        filter: drop-shadow(0 0 0 rgba(0, 0, 0, 0)) blur(8px);
+    }
+
+    45% {
+        opacity: .75;
+        transform: translate3d(0, 15px, 20px) scale(1.04) rotateY(3deg);
+        filter: drop-shadow(0 25px 35px rgba(0, 0, 0, .6)) blur(1px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 55px) scale(1) rotateY(0);
+        filter: drop-shadow(0 35px 45px rgba(0, 0, 0, .72)) drop-shadow(0 0 30px rgba(242, 201, 76, .09));
+    }
+}
+
+@keyframes personajeFlotando {
+    0% {
+        transform: translateZ(55px) translateY(0);
+    }
+
+    50% {
+        transform: translateZ(65px) translateY(-10px);
+    }
+
+    100% {
+        transform: translateZ(55px) translateY(0);
+    }
+}
+
+@keyframes personajeLuz {
+    from {
+        transform: translateZ(-80px) scale(.9);
+        opacity: .5;
+    }
+
+    to {
+        transform: translateZ(-80px) scale(1.08);
+        opacity: .9;
+    }
+}
+
+@keyframes luzMovimiento {
+    from {
+        opacity: .55;
+        transform: translateX(-50%) translateY(-20px) scale(.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(25px) scale(1.08);
+    }
+}
+
+@keyframes particulasMovimiento {
+    from {
+        background-position: 0 0, 0 0, 0 0, 0 0;
+    }
+
+    to {
+        background-position: 0 180px, 100px 220px, -80px 160px, 120px 240px;
+    }
+}
+
+@media (max-width:1100px) {
     .boleteria-container {
         width: calc(100% - 50px);
     }
 
-    .contenido {
-        grid-template-columns: 300px 1fr;
-        gap: 45px;
+    .hero-pelicula {
+        grid-template-columns: minmax(300px, .9fr) minmax(350px, 1.1fr);
+        gap: 20px;
     }
 
     .poster-wrap,
     .poster {
         width: 210px;
+    .personaje-parallax {
+        height: 620px;
     }
 }
 
-@media (max-width: 800px) {
-    .contenido {
+@media (max-width:800px) {
+    .boleteria {
+        overflow-x: hidden;
+    }
+
+    .hero-pelicula {
         grid-template-columns: 1fr;
-        gap: 45px;
+        gap: 10px;
+        min-height: auto;
     }
 
     .poster-wrap,
     .poster {
         width: 210px;
+    .informacion-pelicula {
+        max-width: 100%;
     }
 
-    .fecha {
-        overflow-x: auto;
+    .personaje-parallax {
+        height: 480px;
+        margin-top: -30px;
+        opacity: .88;
+    }
+
+    .personaje-parallax img {
+        transform: translateZ(0);
+    }
+
+    .fondo {
+        position: absolute;
+    }
+
+    .niebla,
+    .luz,
+    .particulas {
+        position: absolute;
+    }
+
+    .funciones {
+        margin-top: 50px;
     }
 }
 
-@media (max-width: 520px) {
+@media (max-width:520px) {
     .boleteria-container {
         width: calc(100% - 30px);
     }
@@ -596,7 +841,7 @@
     }
 
     .informacion-pelicula h1 {
-        font-size: 23px;
+        font-size: 27px;
     }
 
     .funciones-header h2 {
@@ -626,5 +871,15 @@
 
     .proximamente-contenido h2 {
         font-size: 30px;
+    }
+
+    .personaje-parallax {
+        height: 400px;
+        margin-top: -20px;
+        opacity: .82;
+    }
+
+    .funciones {
+        padding-top: 35px;
     }
 }
