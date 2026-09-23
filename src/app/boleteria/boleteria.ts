@@ -1,5 +1,15 @@
+import { Component, computed, inject, OnInit, signal } from "@angular/core";
 import { Component, HostListener, inject, OnInit, signal } from "@angular/core";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import {
+  LucideArrowLeft,
+  LucideClock,
+  LucidePlay,
+  LucideStar,
+  LucideTicket,
+  LucideX,
+} from "@lucide/angular";
 import { CineApi, FuncionCine } from "../admin/api.service";
 import { Pelicula, PeliculaService } from "../cartelera/pelicula.service";
 import { AuthService } from "../login/auth.service";
@@ -12,6 +22,78 @@ interface FechaBoleteria {
 }
 
 @Component({
+  selector: "app-boleteria",
+  standalone: true,
+  imports: [
+    RouterLink,
+    LoginRequerido,
+    LucideArrowLeft,
+    LucideClock,
+    LucidePlay,
+    LucideStar,
+    LucideTicket,
+    LucideX,
+  ],
+  templateUrl: "./boleteria.html",
+  styleUrl: "./boleteria.css",
+})
+export class Boleteria implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly peliculaService = inject(PeliculaService);
+  private readonly cineApi = inject(CineApi);
+  private readonly auth = inject(AuthService);
+  private readonly sanitizer = inject(DomSanitizer);
+
+  readonly pelicula = signal<Pelicula | null>(null);
+  readonly cargando = signal(true);
+  readonly error = signal(false);
+  readonly errorFunciones = signal(false);
+  readonly fechaSeleccionada = signal("");
+  readonly fechas = signal<FechaBoleteria[]>([]);
+  readonly funciones = signal<FuncionCine[]>([]);
+  readonly mostrarLoginRequerido = signal(false);
+  readonly mostrarTrailer = signal(false);
+
+  readonly idTrailer = computed(() =>
+    this.extraerIdYoutube(this.pelicula()?.trailerUrl),
+  );
+
+  readonly urlTrailerSegura = computed<SafeResourceUrl | null>(() => {
+    const id = this.idTrailer();
+    if (!id) return null;
+
+    return this.sanitizer.bypassSecurityTrustResourceUrl(
+      `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`,
+    );
+  });
+
+  async ngOnInit(): Promise<void> {
+    try {
+      const slug = this.route.snapshot.paramMap.get("slug");
+      const pelicula = slug
+        ? await this.peliculaService.obtenerPeliculaPorSlug(slug)
+        : undefined;
+
+      if (!pelicula) {
+        this.error.set(true);
+        return;
+      }
+
+      this.pelicula.set(pelicula);
+
+      if (pelicula.estado !== "proximamente") {
+        const fechas = this.crearFechasDisponibles();
+
+        this.fechas.set(fechas);
+        this.fechaSeleccionada.set(fechas[0].valor);
+
+        await this.cambiarFecha(fechas[0].valor);
+      }
+    } catch {
+      this.error.set(true);
+    } finally {
+      this.cargando.set(false);
     selector: "app-boleteria",
     standalone: true,
     imports: [RouterLink, LoginRequerido],
@@ -113,6 +195,27 @@ export class Boleteria implements OnInit {
         this.fondoY = 0;
     }
 
+  reproducirTrailer(): void {
+    if (this.idTrailer()) this.mostrarTrailer.set(true);
+  }
+
+  cerrarTrailer(): void {
+    this.mostrarTrailer.set(false);
+  }
+
+  private extraerIdYoutube(url: string | undefined): string | null {
+    if (!url) return null;
+
+    const match = url.match(
+      /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/,
+    );
+
+    return match ? match[1] : null;
+  }
+
+  private crearFechasDisponibles(): FechaBoleteria[] {
+    return Array.from({ length: 7 }, (_, indice) => {
+      const fecha = new Date();
     async cambiarFecha(fecha: string): Promise<void> {
         this.fechaSeleccionada.set(fecha);
         this.funciones.set([]);

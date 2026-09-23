@@ -249,6 +249,9 @@
 }
 
 .qty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
     color: var(--accent);
     border: none;
@@ -326,7 +329,6 @@
 }
 
 .cart-empty-icon {
-    font-size: 3rem;
     opacity: 0.5;
     margin-bottom: 8px;
 }
@@ -446,6 +448,9 @@
 }
 
 .cart-remove-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     color: var(--text-muted);
@@ -508,6 +513,10 @@
 }
 
 .btn-checkout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
     flex: 1;
     background: var(--accent);
     color: #070E16;
@@ -577,4 +586,61 @@
         padding: 7px 14px;
         font-size: 0.82rem;
     }
+}
+
+.modal-backdrop {
+    position: fixed;
+    z-index: 200;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, .72);
+}
+
+.modal-salida {
+    max-width: 420px;
+    padding: 1.75rem;
+    text-align: center;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-card);
+}
+
+.modal-salida h2 {
+    margin: .75rem 0 .5rem;
+    color: var(--text-primary);
+}
+
+.modal-salida p {
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.modal-acciones {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: .7rem;
+    margin-top: 1.25rem;
+}
+
+.btn-secundario,
+.btn-peligro {
+    border: 0;
+    border-radius: var(--radius-sm);
+    padding: .8rem 1rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.btn-secundario {
+    color: var(--text-primary);
+    background: var(--bg-card-hover);
+}
+
+.btn-peligro {
+    color: white;
+    background: #b83d45;
 }

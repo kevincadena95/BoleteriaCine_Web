@@ -1,13 +1,14 @@
 import { Component, HostListener, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { LucideArrowLeft, LucideCheck, LucideTimer, LucideTriangleAlert } from '@lucide/angular';
 import { Asiento, AsientosService } from './asientos.service';
 import { CompraService } from '../compra/compra.service';
 
 @Component({
   selector: 'app-asientos',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, LucideArrowLeft, LucideCheck, LucideTimer, LucideTriangleAlert],
   templateUrl: './asientos.html',
   styleUrls: ['./asientos.css']
 })
@@ -74,8 +75,6 @@ export class Asientos implements OnInit, OnDestroy {
     this.asientosService.desconectar();
   }
 
-  // El navegador muestra su alerta nativa al recargar o cerrar una pestaña.
-  // El backend debe expirar cualquier bloqueo que no reciba confirmación de compra.
   @HostListener('window:beforeunload', ['$event'])
   advertirAntesDeCerrar(event: BeforeUnloadEvent): void {
     if (!this.puedeContinuar()) return;
@@ -104,7 +103,7 @@ export class Asientos implements OnInit, OnDestroy {
   }
 
   toggleAsiento(asiento: Asiento): void {
-    if (asiento.estado === 'OCUPADO') return;
+    if (asiento.estado === 'OCUPADO' || asiento.estado === 'RESERVADO') return;
     const nuevoEstado: Asiento['estado'] = asiento.estado === 'LIBRE' ? 'SELECCIONADO' : 'LIBRE';
     this.asientos.update(actuales => actuales.map(item => item.id === asiento.id ? { ...item, estado: nuevoEstado } : item));
     this.asientosService.enviarAccionAsiento(this.funcionId(), asiento.id, nuevoEstado);
@@ -151,9 +150,8 @@ export class Asientos implements OnInit, OnDestroy {
   }
 
   private conectarWS(): void {
-    this.asientosService.conectarWebSocket(this.funcionId(), asientoWS => {
-      // El backend emite el estado definitivo; el precio local se conserva si el mensaje no lo trae.
-      this.asientos.update(actuales => actuales.map(item => item.id === asientoWS.id ? { ...item, ...asientoWS } : item));
+    this.asientosService.conectarWebSocket(this.funcionId(), evento => {
+      this.asientos.update(actuales => actuales.map(item => item.id === evento.id ? { ...item, estado: evento.estado } : item));
     });
   }
 

@@ -5,6 +5,7 @@
     --texto-suave: #aeb8c5;
     --dorado: #f2c94c;
     --rojo: #ef6b72;
+    --naranja: #d98a3d;
     display: block;
 }
 
@@ -19,7 +20,9 @@
 }
 
 .volver {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
     margin: 0 auto 1.25rem;
     color: var(--texto-suave);
     text-decoration: none;
@@ -73,6 +76,12 @@
     background: var(--dorado);
     border-radius: 8px;
     font-size: .9rem;
+}
+
+.reserva-temporal span {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
 }
 
 .reserva-temporal.oculta {
@@ -134,6 +143,10 @@
     background: var(--dorado);
 }
 
+.box.reservado {
+    background: var(--naranja);
+}
+
 .box.ocupado {
     background: var(--rojo);
 }
@@ -183,14 +196,35 @@
 }
 
 .asiento {
+    position: relative;
     width: 100%;
     min-width: 39px;
     height: 44px;
     border: 1px solid transparent;
-    border-radius: 8px 8px 4px 4px;
+    border-radius: 45% 45% 8px 8px / 55% 55% 10px 10px;
     cursor: pointer;
     font-weight: 800;
     transition: transform .18s, border-color .18s, box-shadow .18s;
+}
+
+.asiento::before,
+.asiento::after {
+    content: "";
+    position: absolute;
+    top: 38%;
+    width: 5px;
+    height: 50%;
+    border-radius: 3px;
+    background: currentColor;
+    opacity: .22;
+}
+
+.asiento::before {
+    left: -4px;
+}
+
+.asiento::after {
+    right: -4px;
 }
 
 .asiento.libre {
@@ -211,6 +245,13 @@
     transform: translateY(-2px);
 }
 
+.asiento.reservado {
+    color: rgba(0, 0, 0, .45);
+    background: var(--naranja);
+    cursor: not-allowed;
+    opacity: .65;
+}
+
 .asiento.ocupado {
     color: rgba(0, 0, 0, .45);
     background: var(--rojo);
@@ -223,6 +264,9 @@
     top: 1rem;
     right: 1rem;
     z-index: 300;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
     max-width: 330px;
     padding: .9rem 1rem;
     color: #dff8e7;
@@ -322,10 +366,6 @@
     border-radius: 14px;
     background: #111923;
     box-shadow: 0 20px 50px rgba(0, 0, 0, .5);
-}
-
-.modal-icono {
-    font-size: 2rem;
 }
 
 .modal-salida h2 {

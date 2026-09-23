@@ -82,7 +82,7 @@
                 (click)="removeFromCart(product.id)"
                 [attr.aria-label]="'Quitar uno de ' + product.name"
               >
-                −
+                <svg lucideMinus [size]="16"></svg>
               </button>
               <span class="qty-value">{{ getItemQuantity(product.id) }}</span>
               <button
@@ -90,7 +90,7 @@
                 (click)="addToCart(product)"
                 [attr.aria-label]="'Agregar otro ' + product.name"
               >
-                +
+                <svg lucidePlus [size]="16"></svg>
               </button>
             </div>
             }
@@ -111,7 +111,7 @@
 
         @if (cartItems().length === 0) {
         <div class="cart-empty">
-          <span class="cart-empty-icon">🛒</span>
+          <svg class="cart-empty-icon" lucideShoppingCart [size]="34"></svg>
           <p>Aún no has agregado productos.</p>
           <small>¡Selecciona algo del catálogo!</small>
         </div>
@@ -131,11 +131,11 @@
                   class="cart-qty-btn"
                   (click)="removeFromCart(item.product.id)"
                 >
-                  −
+                  <svg lucideMinus [size]="14"></svg>
                 </button>
                 <span class="cart-qty">{{ item.quantity }}</span>
                 <button class="cart-qty-btn" (click)="addToCart(item.product)">
-                  +
+                  <svg lucidePlus [size]="14"></svg>
                 </button>
               </div>
               <span class="cart-item-subtotal">
@@ -147,7 +147,7 @@
                 [attr.aria-label]="'Eliminar ' + item.product.name"
                 title="Eliminar"
               >
-                ✕
+                <svg lucideX [size]="14"></svg>
               </button>
             </div>
           </li>
@@ -165,7 +165,7 @@
           <div class="cart-actions">
             <button class="btn-clear" (click)="clearCart()">Vaciar</button>
             <button class="btn-checkout" (click)="continuarAConfirmacion()">
-              Continuar →
+              Continuar <svg lucideArrowRight [size]="16"></svg>
             </button>
           </div>
         </div>
@@ -177,4 +177,21 @@
 
 @if (mostrarLoginRequerido()) {
 <app-login-requerido (cerrar)="cerrarLoginRequerido()"> </app-login-requerido>
+}
+
+@if (mostrarConfirmacionSalida()) {
+<div class="modal-backdrop" role="presentation">
+  <section class="modal-salida" role="dialog" aria-modal="true" aria-labelledby="titulo-salida-dulceria">
+    <svg class="modal-icono" lucideTriangleAlert [size]="32" color="#f0b942"></svg>
+    <h2 id="titulo-salida-dulceria">¿Salir de la dulcería?</h2>
+    <p>
+      Tienes {{ cartCount() }} producto{{ cartCount() === 1 ? '' : 's' }} en tu
+      selección. Si sales, se perderán.
+    </p>
+    <div class="modal-acciones">
+      <button class="btn-secundario" (click)="cancelarSalida()">Seguir eligiendo</button>
+      <button class="btn-peligro" (click)="confirmarSalida()">Salir sin guardar</button>
+    </div>
+  </section>
+</div>
 }

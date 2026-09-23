@@ -38,6 +38,7 @@ export const routes: Routes = [
   {
     path: "dulceria",
     component: Dulceria,
+    canDeactivate: [(component: Dulceria) => component.confirmarAbandono()],
   },
   {
     path: "confirmacion",

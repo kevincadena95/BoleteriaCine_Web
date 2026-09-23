@@ -1,12 +1,13 @@
 import { Component, inject, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
+import { LucideEye, LucideEyeOff } from "@lucide/angular";
 import { AuthService } from "./auth.service";
 
 @Component({
   selector: "app-login",
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LucideEye, LucideEyeOff],
   templateUrl: "./login.html",
   styleUrl: "./login.css",
 })
@@ -17,11 +18,16 @@ export class Login {
 
   readonly error = signal("");
   readonly procesando = signal(false);
+  readonly mostrarPassword = signal(false);
 
   readonly formulario = this.fb.group({
     email: ["", [Validators.required, Validators.email]],
     password: ["", Validators.required],
   });
+
+  alternarPassword(): void {
+    this.mostrarPassword.update((valor) => !valor);
+  }
 
   async iniciarSesion(): Promise<void> {
     if (this.formulario.invalid || this.procesando()) {

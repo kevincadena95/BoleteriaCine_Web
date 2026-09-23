@@ -32,7 +32,7 @@ export type DatosFuncion = Omit<FuncionCine, 'id' | 'sala'> & {
 @Injectable({ providedIn: 'root' })
 export class CineApi {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = 'http://192.168.137.1:8080/api';
 
   salas(): Promise<SalaCine[]> {
     return firstValueFrom(

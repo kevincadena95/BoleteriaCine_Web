@@ -57,7 +57,7 @@ export interface EntradaUsuario {
 @Injectable({ providedIn: "root" })
 export class CompraService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = "http://localhost:8080/api/compras";
+  private readonly apiUrl = "http://192.168.137.1:8080/api/compras";
   private readonly claveSesion = "cine:compra-activa";
 
   readonly compra = signal<CompraActiva | null>(this.leerSesion());

@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { LucideClapperboard } from '@lucide/angular';
 import {
   CompraService,
   EntradaUsuario
@@ -10,7 +11,7 @@ import { PeliculaService } from '../cartelera/pelicula.service';
 @Component({
   selector: 'app-mis-entradas',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink],
+  imports: [CurrencyPipe, RouterLink, LucideClapperboard],
   templateUrl: './mis-entradas.html',
   styleUrl: './mis-entradas.css'
 })
@@ -67,7 +68,6 @@ export class MisEntradas implements OnInit {
 
       this.imagenesPeliculas.set(imagenes);
     } catch {
-      // Los boletos se muestran aunque la API de películas no responda.
       this.imagenesPeliculas.set({});
     }
   }

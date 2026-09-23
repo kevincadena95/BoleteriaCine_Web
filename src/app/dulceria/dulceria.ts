@@ -1,6 +1,14 @@
-import { Component, signal, computed, inject } from "@angular/core";
+import { Component, HostListener, signal, computed, inject } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { Router } from "@angular/router";
+import {
+  LucideArrowRight,
+  LucideMinus,
+  LucidePlus,
+  LucideShoppingCart,
+  LucideTriangleAlert,
+  LucideX,
+} from "@lucide/angular";
 import { CompraService } from "../compra/compra.service";
 import { AuthService } from "../login/auth.service";
 import { LoginRequerido } from "../login-requerido/login-requerido";
@@ -25,7 +33,16 @@ export interface CartItem {
 @Component({
   selector: "app-dulceria",
   standalone: true,
-  imports: [CommonModule, LoginRequerido],
+  imports: [
+    CommonModule,
+    LoginRequerido,
+    LucideArrowRight,
+    LucideMinus,
+    LucidePlus,
+    LucideShoppingCart,
+    LucideTriangleAlert,
+    LucideX,
+  ],
   templateUrl: "./dulceria.html",
   styleUrls: ["./dulceria.css"],
 })
@@ -35,7 +52,6 @@ export class Dulceria {
   private auth = inject(AuthService);
 
   readonly products: Product[] = [
-    // Combos
     {
       id: 1,
       name: "Combo 1",
@@ -69,7 +85,6 @@ export class Dulceria {
       image: "/assets/dulceria/combo-4.png",
     },
 
-    // Bebidas e Individuales
     {
       id: 5,
       name: "Bebida Pequeña",
@@ -103,7 +118,6 @@ export class Dulceria {
       image: "/assets/dulceria/agua-sin-gas.jpg",
     },
 
-    // Dulces
     {
       id: 9,
       name: "Tic Tac Naranja",
@@ -141,6 +155,9 @@ export class Dulceria {
   activeFilter = signal<FilterCategory>("todos");
   cartItems = signal<CartItem[]>([]);
   mostrarLoginRequerido = signal(false);
+  mostrarConfirmacionSalida = signal(false);
+  private resolverSalida: ((puedeSalir: boolean) => void) | null = null;
+  private permitirSalida = false;
 
   filteredProducts = computed(() => {
     const filter = this.activeFilter();
@@ -232,5 +249,31 @@ export class Dulceria {
 
   cerrarLoginRequerido(): void {
     this.mostrarLoginRequerido.set(false);
+  }
+
+  @HostListener("window:beforeunload", ["$event"])
+  advertirAntesDeCerrar(event: BeforeUnloadEvent): void {
+    if (this.cartItems().length === 0) return;
+    event.preventDefault();
+    event.returnValue = "";
+  }
+
+  confirmarAbandono(): boolean | Promise<boolean> {
+    if (this.permitirSalida || this.cartItems().length === 0) return true;
+    this.mostrarConfirmacionSalida.set(true);
+    return new Promise<boolean>((resolve) => (this.resolverSalida = resolve));
+  }
+
+  cancelarSalida(): void {
+    this.mostrarConfirmacionSalida.set(false);
+    this.resolverSalida?.(false);
+    this.resolverSalida = null;
+  }
+
+  confirmarSalida(): void {
+    this.permitirSalida = true;
+    this.mostrarConfirmacionSalida.set(false);
+    this.resolverSalida?.(true);
+    this.resolverSalida = null;
   }
 }
