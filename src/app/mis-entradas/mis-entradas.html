@@ -66,6 +66,19 @@
                 }
               </p>
             }
+
+            <button
+              type="button"
+              class="btn-factura"
+              [disabled]="generandoFactura() === entrada.id"
+              (click)="verFactura(entrada)">
+              <svg lucideDownload [size]="16"></svg>
+              {{ generandoFactura() === entrada.id ? 'Generando...' : 'Ver factura' }}
+            </button>
+
+            @if (errorFacturaId() === entrada.id) {
+              <p class="factura-error" role="alert">{{ errorFactura() }}</p>
+            }
           </div>
         </article>
       } @empty {

@@ -1,28 +1,35 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LucideClapperboard } from '@lucide/angular';
+import { LucideClapperboard, LucideDownload } from '@lucide/angular';
 import {
   CompraService,
   EntradaUsuario
 } from '../compra/compra.service';
+import { FacturaService } from '../compra/factura.service';
 import { PeliculaService } from '../cartelera/pelicula.service';
+import { AuthService } from '../login/auth.service';
 
 @Component({
   selector: 'app-mis-entradas',
   standalone: true,
-  imports: [CurrencyPipe, RouterLink, LucideClapperboard],
+  imports: [CurrencyPipe, RouterLink, LucideClapperboard, LucideDownload],
   templateUrl: './mis-entradas.html',
   styleUrl: './mis-entradas.css'
 })
 export class MisEntradas implements OnInit {
   private readonly compraService = inject(CompraService);
   private readonly peliculaService = inject(PeliculaService);
+  private readonly facturaService = inject(FacturaService);
+  private readonly auth = inject(AuthService);
 
   readonly entradas = signal<EntradaUsuario[]>([]);
   readonly imagenesPeliculas = signal<Record<string, string>>({});
   readonly cargando = signal(true);
   readonly error = signal('');
+  readonly generandoFactura = signal<number | null>(null);
+  readonly errorFactura = signal('');
+  readonly errorFacturaId = signal<number | null>(null);
 
   async ngOnInit(): Promise<void> {
     await this.cargarEntradas();
@@ -54,6 +61,35 @@ export class MisEntradas implements OnInit {
 
   asientosTexto(entrada: EntradaUsuario): string {
     return entrada.asientos.join(', ');
+  }
+
+  async verFactura(entrada: EntradaUsuario): Promise<void> {
+    const ventana = window.open('', '_blank');
+
+    this.errorFactura.set('');
+    this.errorFacturaId.set(null);
+    this.generandoFactura.set(entrada.id);
+
+    try {
+      const perfil = await this.auth.obtenerPerfil();
+
+      await this.facturaService.previsualizar(
+        entrada,
+        {
+          nombre: perfil?.nombre ?? 'Cliente Metrópoli Cine',
+          email: perfil?.email ?? ''
+        },
+        ventana
+      );
+    } catch {
+      ventana?.close();
+      this.errorFactura.set(
+        'No se pudo generar la factura. Inténtalo nuevamente.'
+      );
+      this.errorFacturaId.set(entrada.id);
+    } finally {
+      this.generandoFactura.set(null);
+    }
   }
 
   private async cargarImagenesPeliculas(): Promise<void> {
