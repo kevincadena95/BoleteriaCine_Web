@@ -183,6 +183,20 @@
 <div class="modal-backdrop" role="presentation">
   <section class="modal-salida" role="dialog" aria-modal="true" aria-labelledby="titulo-salida-dulceria">
     <svg class="modal-icono" lucideTriangleAlert [size]="32" color="#f0b942"></svg>
+
+    @if (tieneReservaActiva()) {
+    <h2 id="titulo-salida-dulceria">¿Ya no quieres dulcería?</h2>
+    <p>
+      Tienes {{ cartCount() }} producto{{ cartCount() === 1 ? '' : 's' }} en tu
+      selección. Se descartarán, pero tu función y tus asientos siguen
+      reservados.
+    </p>
+    <div class="modal-acciones">
+      <button class="btn-secundario" (click)="cancelarSalida()">Seguir eligiendo</button>
+      <button class="btn-terciario" (click)="volverAAsientos()">Volver a los asientos</button>
+      <button class="btn-confirmar-modal" (click)="continuarSinDulceria()">Continuar sin dulcería</button>
+    </div>
+    } @else {
     <h2 id="titulo-salida-dulceria">¿Salir de la dulcería?</h2>
     <p>
       Tienes {{ cartCount() }} producto{{ cartCount() === 1 ? '' : 's' }} en tu
@@ -192,6 +206,7 @@
       <button class="btn-secundario" (click)="cancelarSalida()">Seguir eligiendo</button>
       <button class="btn-peligro" (click)="confirmarSalida()">Salir sin guardar</button>
     </div>
+    }
   </section>
 </div>
 }

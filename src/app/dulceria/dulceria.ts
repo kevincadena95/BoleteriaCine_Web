@@ -159,6 +159,10 @@ export class Dulceria {
   private resolverSalida: ((puedeSalir: boolean) => void) | null = null;
   private permitirSalida = false;
 
+  readonly tieneReservaActiva = computed(
+    () => this.compraService.compra()?.funcion != null,
+  );
+
   filteredProducts = computed(() => {
     const filter = this.activeFilter();
     if (filter === "todos") return this.products;
@@ -244,6 +248,7 @@ export class Dulceria {
       })),
     );
 
+    this.permitirSalida = true;
     await this.router.navigate(["/confirmacion"]);
   }
 
@@ -275,5 +280,40 @@ export class Dulceria {
     this.mostrarConfirmacionSalida.set(false);
     this.resolverSalida?.(true);
     this.resolverSalida = null;
+  }
+
+  continuarSinDulceria(): void {
+    this.compraService.guardarDulceria([]);
+    this.cartItems.set([]);
+    this.permitirSalida = true;
+    this.mostrarConfirmacionSalida.set(false);
+    this.resolverSalida?.(false);
+    this.resolverSalida = null;
+    void this.router.navigate(["/confirmacion"]);
+  }
+
+  volverAAsientos(): void {
+    const funcion = this.compraService.compra()?.funcion;
+
+    this.cartItems.set([]);
+    this.permitirSalida = true;
+    this.mostrarConfirmacionSalida.set(false);
+    this.resolverSalida?.(false);
+    this.resolverSalida = null;
+
+    if (!funcion) {
+      void this.router.navigate(["/cartelera"]);
+      return;
+    }
+
+    void this.router.navigate(["/asientos", funcion.funcionId], {
+      queryParams: {
+        pelicula: funcion.pelicula,
+        fecha: funcion.fecha,
+        formato: funcion.formato,
+        sala: funcion.sala,
+        hora: funcion.hora,
+      },
+    });
   }
 }
