@@ -25,6 +25,17 @@ interface RespuestaLogin {
   roles: string[];
 }
 
+export interface RegistroClienteSolicitud {
+  nombre: string;
+  email: string;
+  password: string;
+  telefono: string | null;
+}
+
+export interface RespuestaRegistro {
+  mensaje: string;
+}
+
 @Injectable({ providedIn: "root" })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -70,6 +81,18 @@ export class AuthService {
     this.establecerPerfil(perfil);
 
     return perfil;
+  }
+
+  registrarCliente(
+    solicitud: RegistroClienteSolicitud,
+  ): Promise<RespuestaRegistro> {
+    return firstValueFrom(
+      this.http.post<RespuestaRegistro>(
+        `${this.apiUrl}/registro`,
+        solicitud,
+        { withCredentials: true },
+      ),
+    );
   }
 
   async obtenerPerfil(forzarConsulta = false): Promise<PerfilUsuario | null> {

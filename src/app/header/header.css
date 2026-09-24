@@ -149,6 +149,12 @@
   color: #f2c94c;
 }
 
+.accesos-invitado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 @media (max-width: 1100px) {
   .header-container {
     width: calc(100% - 50px);
@@ -204,5 +210,15 @@
   .sesion {
     min-height: 38px;
     padding-left: 12px;
+  }
+
+  .accesos-invitado {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .iniciar-sesion {
+    padding: 8px 11px;
+    font-size: 13px;
   }
 }

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from "@angular/core";
 import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
-import { Router, RouterLink } from "@angular/router";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { LucideEye, LucideEyeOff } from "@lucide/angular";
 import { AuthService } from "./auth.service";
 
@@ -15,8 +15,10 @@ export class Login {
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly error = signal("");
+  readonly mensaje = signal("");
   readonly procesando = signal(false);
   readonly mostrarPassword = signal(false);
 
@@ -24,6 +26,14 @@ export class Login {
     email: ["", [Validators.required, Validators.email]],
     password: ["", Validators.required],
   });
+
+  constructor() {
+    if (this.route.snapshot.queryParamMap.get("registro") === "exitoso") {
+      this.mensaje.set(
+        "Cuenta creada correctamente. Ya puedes iniciar sesión.",
+      );
+    }
+  }
 
   alternarPassword(): void {
     this.mostrarPassword.update((valor) => !valor);
@@ -37,6 +47,7 @@ export class Login {
 
     this.procesando.set(true);
     this.error.set("");
+    this.mensaje.set("");
 
     try {
       const { email, password } = this.formulario.getRawValue();

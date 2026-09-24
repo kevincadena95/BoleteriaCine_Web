@@ -43,7 +43,10 @@
         <button type="button" (click)="cerrarSesion()">Salir</button>
       </div>
       } @else if (auth.sesionComprobada()) {
-      <a routerLink="/login" class="iniciar-sesion"> Iniciar sesión </a>
+      <div class="accesos-invitado">
+        <a routerLink="/login" class="iniciar-sesion">Iniciar sesión</a>
+        <a routerLink="/registro" class="iniciar-sesion">Registrarse</a>
+      </div>
       }
     </nav>
   </div>

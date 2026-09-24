@@ -56,13 +56,24 @@
       @if ( formulario.controls.password.touched &&
       formulario.controls.password.invalid ) {
       <small>La contraseña es obligatoria.</small>
-      } @if (error()) {
+      }
+
+      @if (mensaje()) {
+      <p class="mensaje-exito" role="status">{{ mensaje() }}</p>
+      }
+
+      @if (error()) {
       <p class="mensaje-error" role="alert">{{ error() }}</p>
       }
 
       <button type="submit" [disabled]="formulario.invalid || procesando()">
         {{ procesando() ? 'Ingresando...' : 'Ingresar' }}
       </button>
+
+      <p class="enlace-registro">
+        ¿No tienes una cuenta?
+        <a routerLink="/registro">Regístrate aquí</a>
+      </p>
 
       <a routerLink="/cartelera" class="continuar-sin-sesion">
         Volver a cartelera

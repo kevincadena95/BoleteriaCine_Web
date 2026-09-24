@@ -7,6 +7,7 @@ import { MisEntradas } from "./mis-entradas/mis-entradas";
 import { Boleteria } from "./boleteria/boleteria";
 import { Admin } from "./admin/admin";
 import { Login } from "./login/login";
+import { Registro } from "./registro/registro";
 import { Perfil } from "./perfil/perfil";
 import { adminGuard, authGuard, invitadoGuard } from "./guards/auth.guard";
 
@@ -19,6 +20,11 @@ export const routes: Routes = [
   {
     path: "login",
     component: Login,
+    canActivate: [invitadoGuard],
+  },
+  {
+    path: "registro",
+    component: Registro,
     canActivate: [invitadoGuard],
   },
   {

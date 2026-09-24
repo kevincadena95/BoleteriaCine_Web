@@ -26,7 +26,8 @@ export class App {
       )
       .subscribe(evento => {
         const estaEnLogin = evento.urlAfterRedirects.startsWith('/login');
-        this.mostrarEstructura.set(!estaEnLogin);
+        const estaEnRegistro = evento.urlAfterRedirects.startsWith('/registro');
+        this.mostrarEstructura.set(!estaEnLogin && !estaEnRegistro);
       });
   }
 }
